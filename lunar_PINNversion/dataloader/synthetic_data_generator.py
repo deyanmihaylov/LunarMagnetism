@@ -12,14 +12,14 @@ def create_boundary_data(x_b, y_b, z_b, B_bc_vals):
 
 def colloc_data_loader(colloc_data, batch_size=32):
     dataset = TensorDataset(colloc_data)
-    return DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    return DataLoader(dataset, batch_size=batch_size, shuffle=False)
 
 def boundary_data_loader(bc_data, bc_vals, batch_size=32):
     dataset = TensorDataset(bc_data, bc_vals)
-    return DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    return DataLoader(dataset, batch_size=batch_size, shuffle=False)
 
 
-def create_dataloaders(h=1.0, N_colloc=10000, N_bc = 10000, batch_size=4096):
+def create_dataloaders(h=1.0, N_colloc=10000, N_bc = 4096, batch_size=4096):
     x_c, y_c, z_c, x_b, y_b, z_b, B_bc_vals = create_synthetic_set(h, N_colloc, N_bc)
 
     colloc_data = create_collocation_data(x_c, y_c, z_c)
@@ -35,7 +35,6 @@ def true_phi(x, y, z, kx=4.0, ky=4.0):
 
 def true_B(x, y, z, kx=4.0, ky=4.0):
     k = np.sqrt(kx**2 + ky**2)
-    phi = true_phi(x, y, z, kx, ky)
     Bx =  (kx * np.cos(kx*x) * np.cos(ky*y)) * np.exp(-k*z)
     By =  - (ky * np.sin(kx*x) * np.sin(ky*y)) * np.exp(-k*z)
     Bz =  - k * np.sin(kx*x) * np.cos(ky*y) * np.exp(-k*z)

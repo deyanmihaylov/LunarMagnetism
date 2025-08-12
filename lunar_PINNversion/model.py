@@ -1,285 +1,331 @@
-import torch
 import torch.nn as nn
 import torch.optim as optim
-import wandb
-import matplotlib.pyplot as plt
-import numpy as np
 from tqdm import tqdm
-from torch.optim.lr_scheduler import StepLR
-from dataloader.synthetic_data_generator import true_B
-from torch.distributions import Normal
+import matplotlib.pyplot as pl
+import torch
+import numpy as np
+import wandb
+from lunar_PINNversion.dataloader.util import spherical_to_cartesian
 
-from evaluation.visualization_tools import plot_magnetic_field
-# SIREN Layer Definition
-# class SIRENLayer(nn.Module):
-#     def __init__(self, in_features, out_features, is_first=False, omega_0=30, dtype=torch.float32):
-#         super().__init__()
-#         self.in_features = in_features
-#         self.is_first = is_first
-#         self.omega_0 = omega_0
-#         self.dtype = dtype
-#
-#         self.linear = nn.Linear(in_features, out_features).to(dtype)
-#         self._initialize_weights()
-#
-#     def _initialize_weights(self):
-#         with torch.no_grad():
-#             if self.is_first:
-#                 self.linear.weight.uniform_(-1 / self.in_features, 1 / self.in_features)
-#             else:
-#                 self.linear.weight.uniform_(-np.sqrt(6 / self.in_features) / self.omega_0,
-#                                             np.sqrt(6 / self.in_features) / self.omega_0)
-#
-#     def forward(self, x):
-#         return torch.sin(self.omega_0 * self.linear(x))
-
-# BVectNetFourierSIREN Model Definition
-
+R_lunar = 1701e3 # km
 class PositionalEncoding(nn.Module):
-    def __init__(self, in_dim, num_frequencies):
-        super(PositionalEncoding, self).__init__()
-        self.in_dim = in_dim
-        self.num_frequencies = num_frequencies
+
+    def __init__(self, num_freqs, d_input, max_freq=8):
+        super().__init__()
+        frequencies = 2 ** torch.linspace(0, max_freq, num_freqs)
+        self.frequencies = nn.Parameter(frequencies[None, :, None], requires_grad=False)
+        self.d_output = d_input * (num_freqs * 2)
 
     def forward(self, x):
-        # Generate frequency bands
-        freq_bands = 2.0 ** torch.arange(self.num_frequencies, device=x.device, dtype=x.dtype) * torch.pi
-        out = [x]
-        for i in range(x.shape[1]):
-            for freq in freq_bands:
-                out.append(torch.sin(freq * x[:, i:i + 1]))
-                out.append(torch.cos(freq * x[:, i:i + 1]))
-        return torch.cat(out, dim=-1)
-
-    @property
-    def size(self):
-        return self.in_dim * (2 * self.num_frequencies + 1)
+        encoded = x[:, None, :] * torch.pi * self.frequencies
+        encoded = encoded.reshape(x.shape[0], -1)
+        encoded = torch.cat([torch.sin(encoded), torch.cos(encoded)], -1)
+        return encoded
 
 
-class BVectNetFourierSIREN(nn.Module):
-    def __init__(self, in_dim=3, out_dim=1, num_frequencies=6, hidden_layers=[256, 256, 256, 256, 256, 256],
-                 device=torch.device("cpu"), lr=1e-3):
+# ---- SIREN layer + utilities ----
+class SIRENLinear(nn.Module):
+    """
+    Linear layer with SIREN-style initialization and sine activation applied in forward.
+    If is_first the initialization uses a different range per the SIREN paper.
+    """
+    def __init__(self, in_features, out_features, w0=30.0, is_first=False):
         super().__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+        self.w0 = w0
+        self.is_first = is_first
+        self.linear = nn.Linear(in_features, out_features)
 
-        self.positional_encoding = PositionalEncoding(in_dim, num_frequencies)
-        input_dim = self.positional_encoding.size
+        # Initialization per SIREN paper:
+        with torch.no_grad():
+            if is_first:
+                # first-layer init: uniform(-1/in, 1/in)
+                bound = 1.0 / in_features
+                self.linear.weight.uniform_(-bound, bound)
+            else:
+                # subsequent layers: uniform(-sqrt(6/in)/w0, sqrt(6/in)/w0)
+                bound = (np.sqrt(6.0 / in_features) / self.w0)
+                self.linear.weight.uniform_(-bound, bound)
+            if self.linear.bias is not None:
+                self.linear.bias.zero_()
 
+    def forward(self, x):
+        # apply linear then sin(w0 * linear(x))
+        return torch.sin(self.w0 * self.linear(x))
+
+
+class SIREN(nn.Module):
+    """
+    Multi-layer SIREN block. Final layer is linear readout (no sine) unless keep_sine_on_final=True.
+    """
+    def __init__(self, in_dim, hidden_dim, n_layers, w0=30.0, w0_initial=30.0, keep_sine_on_final=False):
+        """
+        in_dim: input dim
+        hidden_dim: hidden layer width
+        n_layers: number of SIREN layers (excluding final linear readout)
+        w0: w0 for subsequent layers
+        w0_initial: w0 for first layer (often set to 30.0)
+        """
+        super().__init__()
+        layers = []
+        # first SIREN layer (special init + w0_initial)
+        layers.append(SIRENLinear(in_dim, hidden_dim, w0=w0_initial, is_first=True))
+        # remaining SIREN layers
+        for _ in range(max(0, n_layers - 1)):
+            layers.append(SIRENLinear(hidden_dim, hidden_dim, w0=w0, is_first=False))
+
+        self.siren = nn.Sequential(*layers)
+        # final readout: either linear (no sine) or SIRENLinear if requested
+        if keep_sine_on_final:
+            self.final = SIRENLinear(hidden_dim, 1, w0=w0, is_first=False)
+        else:
+            self.final = nn.Linear(hidden_dim, 1)
+            # init final readout similar to small uniform
+            with torch.no_grad():
+                bound = np.sqrt(6.0 / hidden_dim) / w0
+                self.final.weight.uniform_(-bound, bound)
+                if self.final.bias is not None:
+                    self.final.bias.zero_()
+
+    def forward(self, x):
+        h = self.siren(x)
+        return self.final(h)
+
+# Define the neural network model
+class PINN(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size, num_freqs, max_freq=8,
+                 device='cpu',
+                 use_siren=False,
+                 siren_hidden_layers=3,
+                 siren_w0=30.0,
+                 keep_sine_on_final=False
+                 ):
+        super(PINN, self).__init__()
         self.device = device
-        self.dtype = torch.float32
+        self.positional_encoding = PositionalEncoding(num_freqs, input_size, max_freq)
+        in_dim = self.positional_encoding.d_output
 
-        layer_sizes = [input_dim] + hidden_layers + [out_dim]
+        self.use_siren = use_siren
 
-        self.layers = nn.ModuleList()
-        for i in range(len(layer_sizes) - 1):
-            self.layers.append(nn.Linear(layer_sizes[i], layer_sizes[i + 1]))
-            if i < len(layer_sizes) - 2:
-                self.layers.append(nn.Tanh())  # Add tanh activation for hidden layers
+        if use_siren:
+            # Build SIREN block. The SIREN returns a scalar (output_size==1 expected).
+            # If your output_size > 1, you'd need to adapt final layer dimension.
+            if output_size != 1:
+                # support vector outputs by making final layer map to output_size
+                # we achieve that by replacing SIREN.final with appropriate linear
+                self.siren = SIREN(in_dim, hidden_size, siren_hidden_layers,
+                                   w0=siren_w0, w0_initial=siren_w0, keep_sine_on_final=False)
+                # replace final readout to map to output_size
+                last_linear = nn.Linear(hidden_size, output_size)
+                with torch.no_grad():
+                    bound = np.sqrt(6.0 / hidden_size) / siren_w0
+                    last_linear.weight.uniform_(-bound, bound)
+                    if last_linear.bias is not None:
+                        last_linear.bias.zero_()
+                # chain: siren.siren -> last_linear
+                self.hidden = nn.Sequential(self.siren.siren, last_linear)
+            else:
+                # single-output SIREN (common case for scalar potential)
+                self.siren = SIREN(in_dim, hidden_size, siren_hidden_layers,
+                                   w0=siren_w0, w0_initial=siren_w0, keep_sine_on_final=keep_sine_on_final)
+                # expose a consistent API: self.hidden(x) returns shape (N, output_size)
+                self.hidden = self.siren
+        else:
+            # original tanh MLP
+            self.hidden = nn.Sequential(
+                nn.Linear(in_dim, hidden_size),
+                nn.Tanh(),
+                nn.Linear(hidden_size, hidden_size),
+                nn.Tanh(),
+                nn.Linear(hidden_size, hidden_size),
+                nn.Tanh(),
+                nn.Linear(hidden_size, output_size)
+            )
 
+        # move to device
         self.to(self.device)
 
     def forward(self, x):
-        x = x.to(self.dtype)
-        x = self.positional_encoding(x)
-        for layer in self.layers:
-            x = layer(x)
-        return x
+        if not x.is_floating_point():
+            x = x.float()
+        x = x.to(self.device)
+        x_encoded = self.positional_encoding(x)
+        out = self.hidden(x_encoded)
+        # if output is (N,1) make sure it's (N,1) shape consistently
+        return out
 
-    @staticmethod
-    def laplacian(phi, coords):
-        grads = torch.autograd.grad(phi, coords, grad_outputs=torch.ones_like(phi), create_graph=True)[0]
-        d2 = []
-        for i in range(coords.shape[1]):
-            grad2 = -1 * torch.autograd.grad(grads[:, i], coords, grad_outputs=torch.ones_like(grads[:, i]), create_graph=True)[0][:, i]
-            d2.append(grad2.unsqueeze(1))
-        return torch.cat(d2, dim=1).sum(dim=1)
+    # Compute the Laplacian using automatic differentiation
+    def compute_laplacian(self, inputs):
+        phi = self(inputs.requires_grad_(True))
+        grad_phi = torch.autograd.grad(outputs=phi, inputs=inputs, grad_outputs=torch.ones_like(phi),
+                                       create_graph=True)[0]
+        laplacian = sum(
+            [torch.autograd.grad(outputs=grad_phi[:, i], inputs=inputs, grad_outputs=torch.ones_like(grad_phi[:, i]),
+                                 create_graph=True)[0][:, i] for i in range(3)])
+        return laplacian
 
-    def compute_b_field(self, phi, coords):
-        grads = -1 * torch.autograd.grad(phi, coords, grad_outputs=torch.ones_like(phi), create_graph=True)[0]
-        return grads
 
-    def train_model(self, train_colloc_loader, train_boundary_loader, val_colloc_loader, val_boundary_loader,
-                    epochs=100, lambda_pde=1.0, lambda_bc=10.0,
-                    log_interval=1, val_interval=20, lr=1e-3,
-                    step_size=10, gamma=0.1):
+    def boundary_condition_loss(self, inputs, B_measured):
+        phi = self(inputs.requires_grad_(True))
+        grad_phi = torch.autograd.grad(outputs=phi, inputs=inputs, grad_outputs=torch.ones_like(phi),
+                                       create_graph=True)[0]
+        B_pred = -1 * grad_phi
+
+        return torch.sum(((B_measured - B_pred)/(torch.abs(B_pred)+1e-3)) ** 2)
+
+    def train_pinn(self, inner_loader, boundary_loader, lunar_data, epochs, lr,
+                   lambda_domain=1, lambda_bc=1, period_log=1000, period_eval=5000,
+                   step_size=1000, gamma=0.95):
 
         optimizer = optim.Adam(self.parameters(), lr=lr)
-        scheduler = StepLR(optimizer, step_size=step_size, gamma=gamma)  # Initialize the scheduler
+        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=gamma)
+
 
         for epoch in range(epochs):
-            self.train()
-            epoch_loss = 0.0
-            # with tqdm(total=len(train_colloc_loader) + len(train_boundary_loader), desc=f"Epoch {epoch}", leave=True) as pbar:
-            with tqdm(total=len(train_colloc_loader) + len(train_boundary_loader), desc=f"Epoch {epoch}", leave=True) as pbar:
-                # Train on collocation data
+            total_loss_epoch = 0.0
+            progress_bar = tqdm(total=len(inner_loader) + len(boundary_loader),
+                                desc=f"Epoch {epoch + 1}/{epochs}",
+                                unit="batch",
+                                leave=False)  # leave=True if you want to keep history
+            running_laplacian_loss = 0.0
+            running_bc_loss = 0.0
+            # --- Loop over boundary points ---
+            for (x_boundary_batch, B_batch) in boundary_loader:
+                optimizer.zero_grad()
+                boundary_loss = lambda_bc * self.boundary_condition_loss(x_boundary_batch, B_batch)
+                running_bc_loss = boundary_loss.item()
+                boundary_loss.backward()
+                optimizer.step()
+                total_loss_epoch += boundary_loss.item()
+                progress_bar.update(1)
+                progress_bar.set_postfix({
+                    "laplacian": f"{running_laplacian_loss:.3e}",
+                    "bc": f"{running_bc_loss:.3e}",
+                    "total": f"{total_loss_epoch:.3e}"
+                })
+            # --- Loop over inner points ---
+            for (x_inner_batch,) in inner_loader:
+                optimizer.zero_grad()
+                laplacian_loss = lambda_domain * torch.mean(self.compute_laplacian(x_inner_batch) ** 2)
+                running_laplacian_loss = laplacian_loss.item()
+                laplacian_loss.backward()
+                optimizer.step()
+                total_loss_epoch += laplacian_loss.item()
+                progress_bar.update(1)
+                progress_bar.set_postfix({
+                    "lc": f"{running_laplacian_loss:.3e}",
+                    "bc": f"{running_bc_loss:.3e}",
+                    "total": f"{total_loss_epoch:.3e}"
+                })
 
-                # Train on boundary data
-                for bc_batch in train_boundary_loader:
-                    bc_pts, bc_vals = bc_batch
-                    bc_pts, bc_vals = bc_pts.to(self.device), bc_vals.to(self.device)
+            progress_bar.close()
+            if epoch % period_log == 0:
+                current_lr = optimizer.param_groups[0]['lr']
+                print(f"Epoch {epoch}, Total Loss: {total_loss_epoch:.3e}, LR: {current_lr:.3e}")
 
-                    optimizer.zero_grad()
-                    phi_bc = self(bc_pts)
-                    B_inferred = self.compute_b_field(phi_bc, bc_pts)
-                    loss_bc = torch.mean((B_inferred - bc_vals)**2)
-                    loss_bc.backward()
-                    optimizer.step()
-                    epoch_loss += loss_bc.item()
-                    pbar.set_postfix({"loss_bc": loss_bc.item()})
-                    pbar.update(1)
+            if epoch % period_eval == 0:
+                self.evaluate_model(epoch, lunar_data)
 
-                    if epoch % log_interval == 0:
-                        wandb.log({
-                            'train_loss_bc': loss_bc.item(),
-                            'epoch': epoch
-                        })
+            scheduler.step()
 
-                # for colloc_batch in train_colloc_loader:
-                #     colloc_pts = colloc_batch[0].clone().requires_grad_(True).to(self.device)
-                #
-                #     optimizer.zero_grad()
-                #     phi_c = self(colloc_pts)  # shape (N, 3)
-                #     loss_pde = torch.mean(self.laplacian(phi_c, colloc_pts)**2)
-                #
-                #     loss_pde.backward()
-                #     optimizer.step()
-                #     epoch_loss += lambda_pde*loss_pde.item()
-                #     pbar.set_postfix({"loss_pde": lambda_pde*loss_pde.item()})
-                #     pbar.update(1)
-                #
-                #     if epoch % log_interval == 0:
-                #         wandb.log({
-                #             'train_loss_pde': loss_pde.item(),
-                #             'epoch': epoch
-                #         })
+    def plot_B_eval(self, epoch, lunar_data):
+        num_pts = 100
 
-                # Combined epoch loss
-                if epoch % log_interval == 0:
-                    wandb.log({
-                        'train_epoch_loss': epoch_loss,
-                        'epoch': epoch
-                    })
+        def spherical_to_cartesian(r, theta, phi):
+            x = r * torch.cos(theta) * torch.cos(phi)
+            y = r * torch.cos(theta) * torch.sin(phi)
+            z = r * torch.sin(theta)
+            return x, y, z
 
-                # Validation step
-                if epoch % val_interval == 0:
-                    self.evaluate_model(val_colloc_loader, val_boundary_loader, epoch)
+        theta_linspace = torch.linspace(-torch.pi/2, torch.pi/2,num_pts)
+        phi_linspace = torch.linspace(-np.pi, torch.pi, num_pts)
+        r_lunar_surface = torch.ones(1)
+        r_BC_surface = torch.ones(1) + 1e5/R_lunar
 
-    def create_xyz_plane_torch(self, x_range, y_range, z_value, step, device="cuda", dtype=torch.float32):
-        """
-        Create a batch of (x, y, z) points on z=0 plane for PyTorch models.
+        # Create meshgrid in spherical coordinates
+        # meshgrid(..., indexing='ij') gives shape [r, theta, phi]
+        R_lunar_surface, Theta, Phi = torch.meshgrid(r_lunar_surface, theta_linspace, phi_linspace,
+                                                     indexing='ij')
+        R_orbit_surface, Theta, Phi = torch.meshgrid(r_BC_surface, theta_linspace, phi_linspace,
+                                                     indexing='ij')
+        # Convert spherical to Cartesian (vectorized)
+        X_0, Y_0, Z_0 = spherical_to_cartesian(R_lunar_surface, Theta, Phi)
+        X_BC, Y_BC, Z_BC = spherical_to_cartesian(R_orbit_surface, Theta, Phi)
+        # Stack into single tensor if needed
+        grid_mesh_eval_xyz_0 = torch.stack((X_0.ravel(), Y_0.ravel(), Z_0.ravel()), dim=-1)
+        grid_mesh_eval_xyz_0 = torch.tensor(grid_mesh_eval_xyz_0, dtype=torch.float32,
+                               requires_grad=True).to(self.device)
+        phi_pred_0 = self(grid_mesh_eval_xyz_0)
+        grad_phi_0 = torch.autograd.grad(outputs=phi_pred_0, inputs=grid_mesh_eval_xyz_0,
+                                       grad_outputs=torch.ones_like(phi_pred_0),
+                                       create_graph=True)[0]
 
-        Parameters:
-            x_range (tuple): (xmin, xmax) range for x values.
-            y_range (tuple): (ymin, ymax) range for y values.
-            step (float): spacing between points.
-            device (str): "cpu" or "cuda" for tensor location.
-            dtype: PyTorch dtype (default float32).
+        B_pred_0 = (-1 * grad_phi_0).cpu().detach().numpy()
 
-        Returns:
-            torch.Tensor: shape (N, 3) tensor of (x, y, z) points.
-        """
-        x = np.arange(x_range[0], x_range[1] + step, step)
-        y = np.arange(y_range[0], y_range[1] + step, step)
-        X, Y = np.meshgrid(x, y)
-        Z = np.zeros_like(X) + z_value
+        grid_mesh_eval_xyz_BC = torch.stack((X_BC.ravel(), Y_BC.ravel(), Z_BC.ravel()), dim=-1)
+        grid_mesh_eval_xyz_BC = torch.tensor(grid_mesh_eval_xyz_BC, dtype=torch.float32,
+                                            requires_grad=True).to(self.device)
+        phi_pred_BC = self(grid_mesh_eval_xyz_BC)
+        grad_phi_BC = torch.autograd.grad(outputs=phi_pred_BC, inputs=grid_mesh_eval_xyz_BC,
+                                         grad_outputs=torch.ones_like(phi_pred_BC),
+                                         create_graph=True)[0]
 
-        points_np = np.column_stack((X.ravel(), Y.ravel(), Z.ravel()))
-        points_torch = torch.tensor(points_np, dtype=dtype, device=device, requires_grad=True)
+        B_pred_BC = (-1 * grad_phi_BC).cpu().detach().numpy()
+        labels = ['B$_{x}$', 'B$_{y}$', "B$_{z}$"]
 
-        return points_torch
+        fig, ax = pl.subplots(1, 3, figsize=(10, 3))
+        for i, el in enumerate(ax):
+            im1 = el.imshow(B_pred_0[..., i].reshape(num_pts, num_pts),
+                            cmap='seismic',
+                            vmin=np.nanquantile(B_pred_0[..., i], 0.1),
+                            vmax=np.nanquantile(B_pred_0[..., i], 0.9))
+            el.set_title(labels[i])
+            pl.colorbar(im1)
+        fig.suptitle("Lunar surface estimate")
+        pl.tight_layout()
+        pl.savefig(f"eval_surface_{epoch:d}.png")
+        pl.show()
+        pl.close()
 
-    def plot_vector_components(self, vec, n, cmap='viridis', title="blah"):
+        fig, ax = pl.subplots(1, 3, figsize=(10, 3))
+        for i, el in enumerate(ax):
+            im1 = el.imshow(B_pred_BC[..., i].reshape(num_pts, num_pts),
+                            cmap='seismic',
+                            vmin=np.nanquantile(B_pred_BC[..., i], 0.1),
+                            vmax=np.nanquantile(B_pred_BC[..., i], 0.9))
+            pl.colorbar(im1)
+            el.set_title(labels[i])
 
-        if vec.shape != (n ** 2, 3):
-            raise ValueError(f"Expected shape ({n ** 2}, 3), got {vec.shape}")
+        pl.tight_layout()
+        fig.suptitle("Lunar BC estimate")
 
-        # Reshape each component into an n x n grid
-        comp_x = vec[:, 0].reshape(n, n)
-        comp_y = vec[:, 1].reshape(n, n)
-        comp_z = vec[:, 2].reshape(n, n)
+        pl.savefig(f"eval_BC_{epoch:d}.png")
+        pl.show()
+        pl.close()
 
-        fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-        comps = [comp_x, comp_y, comp_z]
-        titles = ['X-component', 'Y-component', 'Z-component']
+        args = [lunar_data.b_x[::10],
+                lunar_data.b_y[::10],
+                lunar_data.b_z[::10]]
+        if (epoch == 0) or (epoch == 1):
+            fig, ax = pl.subplots(1, 3, figsize=(10, 3))
+            for i, el in enumerate(args):
+                im1 = ax[i].scatter(lunar_data.phi[::10],
+                                   lunar_data.theta[::10],
+                                   c=el,
+                                   cmap='seismic',
+                                   vmin=np.nanquantile(el, 0.1),
+                                   vmax=np.nanquantile(el, 0.9))
+                pl.colorbar(im1)
+                ax[i].set_title(labels[i])
 
-        for ax, comp, title in zip(axs, comps, titles):
-            im = ax.imshow(comp, origin='lower', cmap=cmap)
-            ax.set_title(title)
-            fig.colorbar(im, ax=ax)
-        fig.suptitle(title)
-        plt.tight_layout()
-        plt.show()
-        return fig
+            pl.tight_layout()
+            fig.suptitle("Lunar true BC estimate")
 
-    def plot_colormesh_3plot(self, X, Y, vec, cmap='viridis', title="blah"):
+            pl.savefig(f"true_BC_{epoch:d}.png")
+            pl.show()
+            pl.close()
 
-        fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-        titles = ['X-component', 'Y-component', 'Z-component']
-
-        for ax, comp, title, i in zip(axs, vec.T, titles, range(3)):
-            im = ax.tripcolor(X, Y, comp, shading='flat', cmap=cmap)
-            ax.set_title(title)
-            fig.colorbar(im, ax=ax)
-        fig.suptitle(title)
-        plt.tight_layout()
-        plt.show()
-        return fig
-
-    def evaluate_model(self, val_colloc_loader, val_boundary_loader, epoch):
-        self.eval()
-        val_loss_pde = 0.0
-        val_loss_bc = 0.0
-
-        # # Validation on collocation data
-        # for colloc_batch in val_colloc_loader:
-        #     colloc_pts = colloc_batch[0].clone().requires_grad_(True).to(self.device)
-        #     phi_c = self(colloc_pts)
-        #     loss_pde = sum(torch.mean(self.laplacian(phi_c[:, j:j + 1], colloc_pts)**2) for j in range(3))
-        #     val_loss_pde += loss_pde.item()
-
-        # Validation on boundary data
-        for bc_batch in val_boundary_loader:
-            bc_pts, bc_vals = bc_batch
-            bc_pts, bc_vals = bc_pts.to(self.device), bc_vals.to(self.device)
-            phi_b = self(bc_pts)
-            B_b = self.compute_b_field(phi_b, bc_pts)
-            loss_bc = torch.mean((B_b - bc_vals)**2)
-            val_loss_bc += loss_bc.item()
-
-        # Combined validation loss
-        val_loss = val_loss_pde + val_loss_bc
-
-        # Logging validation metric
-        wandb.log({
-            'val_total_loss': val_loss,
-            'val_pde_loss': val_loss_pde,
-            'val_bc_loss': val_loss_bc,
-            'epoch': epoch
-        })
-
-        bc_vals = bc_vals.detach().cpu().numpy()
-        bc_pts = bc_pts.detach().cpu().numpy()
-
-        fig_bc_vals = self.plot_colormesh_3plot(bc_pts[:, 0], bc_pts[:, 1], bc_vals.squeeze(), cmap='seismic',
-                                                title=f"Magnetic Field at z = 1")
-
-        wandb.log({"Magnetic Field BC": wandb.Image(fig_bc_vals)})
-
-        # Example of plotting magnetic field (assuming `plot_magnetic_field` function exists)
-        pts_torch = self.create_xyz_plane_torch((0, 1), (0, 1), 1, 0.025)
-        inferred_phi = self(pts_torch)
-        inferred_B = self.compute_b_field(inferred_phi, pts_torch)
-        inferred_B = inferred_B.detach().cpu().numpy()
-        # Example usage
-        # print(pts_torch.shape)  # (N, 3)
-        fig_upper_boundary = self.plot_vector_components(inferred_B, 41, cmap='seismic',
-                                                         title=f"Magnetic Field at z = 1 at Epoch {epoch}")
-        wandb.log({"Magnetic Field @ z=0": wandb.Image(fig_upper_boundary)})
-
-        # Example of plotting magnetic field (assuming `plot_magnetic_field` function exists)
-        pts_torch = self.create_xyz_plane_torch((0, 1), (0, 1), 0, 0.025)
-        inferred_phi = self(pts_torch)
-        inferred_B = self.compute_b_field(inferred_phi, pts_torch)
-        inferred_B = inferred_B.detach().cpu().numpy()
-        fig_lower_boundary = self.plot_vector_components(inferred_B, 41, cmap='seismic',
-                                          title=f"Magnetic Field at z = 0 at Epoch {epoch}")
-        wandb.log({"Magnetic Field@ z=1": wandb.Image(fig_lower_boundary)})
+    def evaluate_model(self, epoch, lunar_data):
+        # Predict the potential and field after training
+        self.plot_B_eval(epoch, lunar_data)

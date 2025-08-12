@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import torch
 import numpy as np
 
+
+
+
 def plot_component_comparison(model, true_B_func, component=2, nx=50, ny=50, device="cpu",
                               name='a'):
     """

@@ -1,0 +1,108 @@
+PDS_VERSION_ID          = PDS3
+RECORD_TYPE             = FIXED_LENGTH
+RECORD_BYTES            = 311
+FILE_RECORDS            = 1
+^INDEX_TABLE            = "index.tab"
+DATA_SET_ID             = "SLN-L-LMAG-3-MAG-TS-V1.0"
+INSTRUMENT_NAME         = "LUNAR MAGNETOMETER"
+INSTRUMENT_HOST_NAME    = "SELENE MAIN ORBITER"
+TARGET_NAME             = "MOON"
+PRODUCT_CREATION_TIME   = UNK
+
+OBJECT                  = INDEX_TABLE
+  INTERCHANGE_FORMAT    = ASCII
+  ROWS                  = 1
+  COLUMNS               = 8
+  ROW_BYTES             = 311
+  INDEX_TYPE            = SINGLE
+  DESCRIPTION           = "The index table contains parameters that 
+                          describe the observation and camera states for 
+                          each file found on the medium."
+
+  OBJECT                = COLUMN
+    NAME                = INSTRUMENT_NAME
+    COLUMN_NUMBER       = 1
+    DATA_TYPE           = CHARACTER
+    START_BYTE          = 2
+    BYTES               = 60
+    FORMAT              = "A60"
+    DESCRIPTION         = "The INSTRUMENT_NAME element provides 
+                          the full name of an instrument."
+  END_OBJECT            = COLUMN
+
+  OBJECT                = COLUMN
+    NAME                = PRODUCT_ID
+    COLUMN_NUMBER       = 2
+    DATA_TYPE           = CHARACTER
+    START_BYTE          = 65
+    BYTES               = 40
+    FORMAT              = "A40"
+    DESCRIPTION         = "This is the unique identifier within the
+                          PDS data set for the given product."
+  END_OBJECT            = COLUMN
+
+  OBJECT                = COLUMN
+    NAME                = PATH_NAME
+    COLUMN_NUMBER       = 3
+    DATA_TYPE           = CHARACTER
+    START_BYTE          = 108
+    BYTES               = 15
+    FORMAT              = "A15"
+    DESCRIPTION         = "Directory (folder) location data product."
+  END_OBJECT            = COLUMN
+
+  OBJECT                = COLUMN
+    NAME                = FILE_NAME
+    COLUMN_NUMBER       = 4
+    DATA_TYPE           = CHARACTER
+    START_BYTE          = 126
+    BYTES               = 40
+    FORMAT              = "A40"
+    DESCRIPTION         = "The FILE_NAME element provides the location 
+                          independent name of a file."
+  END_OBJECT            = COLUMN
+
+  OBJECT                = COLUMN
+    NAME                = BROWSE_PATH_NAME
+    COLUMN_NUMBER       = 5
+    DATA_TYPE           = CHARACTER
+    START_BYTE          = 169
+    BYTES               = 25
+    FORMAT              = "A25"
+    DESCRIPTION         = "Directory (folder) location of browse image."
+  END_OBJECT            = COLUMN
+
+  OBJECT                = COLUMN
+    NAME                = BROWSE_FILE_NAME
+    COLUMN_NUMBER       = 6
+    DATA_TYPE           = CHARACTER
+    START_BYTE          = 197
+    BYTES               = 40
+    FORMAT              = "A40"
+    DESCRIPTION         = "File name of browse image."
+  END_OBJECT            = COLUMN
+
+  OBJECT                = COLUMN
+    NAME                = START_TIME
+    COLUMN_NUMBER       = 7
+    DATA_TYPE           = TIME
+    START_BYTE          = 239
+    BYTES               = 35
+    FORMAT              = "A35"
+    DESCRIPTION         = "This parameter provides the UTC value at 
+                          the start of the observation."
+  END_OBJECT            = COLUMN
+
+  OBJECT                = COLUMN
+    NAME                = STOP_TIME
+    COLUMN_NUMBER       = 8
+    DATA_TYPE           = TIME
+    START_BYTE          = 275
+    BYTES               = 35
+    FORMAT              = "A35"
+    DESCRIPTION         = "This parameter provides the UTC value at 
+                          the end of the observation."
+  END_OBJECT            = COLUMN
+
+END_OBJECT              = INDEX_TABLE
+END

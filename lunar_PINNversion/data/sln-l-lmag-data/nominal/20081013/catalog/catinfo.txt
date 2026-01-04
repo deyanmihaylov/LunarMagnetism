@@ -1,0 +1,22 @@
+PDS_VERSION_ID        = PDS3
+RECORD_TYPE          = STREAM
+SPACECRAFT_NAME      = SELENE
+TARGET_NAME          = MOON
+OBJECT               = TEXT
+ INTERCHANGE_FORMAT  = ASCII
+ PUBLICATION_DATE    = 
+ NOTE                = "Description of the CATALOG directory contents"
+END_OBJECT           = TEXT
+END
+
+CATALOG DIRECTORY CONTENTS
+---------------------------
+
+The CATALOG subdirectory contains the completed catalog objects associated 
+with the SELENE Level 2 Data.
+
+The following files are found in this directory.
+
+INSTHOST.CAT- Contains instrument host information.
+MISSION.CAT - Contains mission information.
+xxx_DS.CAT  - Contains dataset information of each instruments.

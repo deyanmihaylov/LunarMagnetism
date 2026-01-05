@@ -1,0 +1,35 @@
+PDS_VERSION_ID                  = PDS3
+
+OBJECT                          = VOLUME
+  VOLUME_SERIES_NAME            = "MISSION TO LUNAR"
+  VOLUME_SET_NAME               = N/A
+  VOLUME_SET_ID                 = N/A
+  VOLUME_NAME                   = N/A
+  VOLUME_ID                     = N/A
+  VOLUME_VERSION_ID             = "VERSION 1"
+  VOLUME_FORMAT                 = ANSI
+  VOLUMES                       = 1
+  DATA_SET_ID                   = N/A
+  PUBLICATION_DATE              = 
+  MEDIUM_TYPE                   = 
+  DESCRIPTION                   = "This volume contains SELENE Level 2 Product file."
+  MISSION_NAME                  = SELENE
+  SPACECRAFT_NAME               = SELENE
+  SPACECRAFT_ID                 = N/A
+
+  OBJECT                        = DATA_PRODUCER
+    INSTITUTION_NAME            = "JAXA"
+    FACILITY_NAME               = "Lunar Exploration Technology office"
+    FULL_NAME                   = "KAI MATSUI"
+    DISCIPLINE_NAME             = N/A
+    ADDRESS_TEXT                = "SENGEN 2-1-1, TSUKUBA, IBARAKI 305-8505 JAPAN"
+  END_OBJECT                    = DATA_PRODUCER
+
+ OBJECT                            = CATALOG
+  ^MISSION_CATALOG                 = "MISSION.CAT"
+  ^INSTRUMENT_HOST_CATALOG         = "INSTHOST.CAT"
+  ^PERSONNEL_CATALOG               = "PERSON.CAT"
+  ^REFERENCE_CATALOG               = "REF.CAT"
+  ^DATA_SET_CATALOG                = 
+ END_OBJECT                        = CATALOG
+END_OBJECT                      = VOLUME

@@ -1,0 +1,36 @@
+PDS_VERSION_ID      = PDS3
+RECORD_TYPE         = STREAM
+SPACECRAFT_NAME     = "SELENE"
+TARGET_NAME         = "MOON"
+OBJECT              = TEXT
+ INTERCHANGE_FORMAT = ASCII
+ PUBLICATION_DATE   = 2016-05-01
+ NOTE               = "Description of contents in the INDEX
+                       subdirectoy."
+END_OBJECT          = TEXT
+END
+
+
+           Content description of INDEX directory
+
+
+The index directory on this volume contains information
+about the data products stored on the DVD. There are two
+files ('index.tab' and 'index.lbl') in this directory.
+The index files are designed for easy ingestion into most
+Data Base Management Systems. Fields are separated by comma
+delimiters and string fields are enclosed in double quote
+characters (").
+
+index.tab - The index is organized as a table with each
+row containing information about a data product and each column 
+an attribute of the data product. The information in the table 
+includes the directory location, file name, browse directory 
+and file name, etc.
+
+index.lbl - This PDS label file contains a detailed description 
+of the index table ('index.tab'). It can be accessed
+and viewed with an editor so that a user can determine the
+contents and organization of the table or it can be used with PDS 
+tools to access the table. Refer to this file for detailed 
+information and format of the index table.

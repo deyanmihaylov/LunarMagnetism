@@ -1,0 +1,45 @@
+PDS_VERSION_ID          = "PDS3"
+RECORD_TYPE             = FIXED_LENGTH
+FILE_NAME               = "MAG_TS20080921.dat"
+^TABLE                  = "MAG_TS20080921.dat"
+MISSION_NAME            = "SELENE"
+DATA_SET_ID             = "SLN-L-LMAG-3-MAG-TS-V1.0"
+DATA_SET_NAME           = "SELENE MOON LMAG 3 MAGNETIC FIELD TIME SERIES V1.0"
+L2DB_ORIGINAL_ID        = "MAG_TS"
+PRODUCT_ID              = "MAG_TS20080921"
+INSTRUMENT_TYPE         = "MAGNETOMETER"
+INSTRUMENT_ID           = "LMAG"
+INSTRUMENT_NAME         = "LUNAR MAGNETOMETER"
+INSTRUMENT_HOST_NAME    = "SELENE MAIN ORBITER"
+TARGET_TYPE             = "SATELLITE"
+TARGET_NAME             = "MOON"
+START_TIME              = 2008-09-21T00:00:00
+STOP_TIME               = 2008-09-21T23:59:56
+RECORD_BYTES            = 129
+FILE_RECORDS            = 21600
+ 
+PRODUCT_NAME            = "MAG_TS"
+COMMENT_TEXT            = "Magnetic field time-series observed by
+                          LMAG.  4second values are stored. 
+                          Time, position in ME, magnetic field vector 
+                          in ME, position in GSE, and magnetic field in 
+                          GSE are recorded." 
+ 
+/* TIME SERIES */
+OBJECT                         = TIME_SERIES
+  INTERCHANGE_FORMAT           = ASCII
+  ROWS                         = 21600
+  COLUMNS                      = 13
+  ROW_BYTES                    = 129
+  SAMPLING_PARAMETER_NAME      = TIME
+  SAMPLING_PARAMETER_UNIT      = SECOND
+  SAMPLING_PARAMETER_INTERVAL  = 4.0
+  OBJECT                       = COLUMN
+    START_BYTE                 = NULL
+    NAME                       = NULL
+    DATA_TYPE                  = NULL
+    BYTES                      = NULL
+  END_OBJECT                   = COLUMN
+END_OBJECT                     = TIME_SERIES
+ 
+END

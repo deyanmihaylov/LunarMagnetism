@@ -1,0 +1,345 @@
+PDS_VERSION_ID            = PDS3
+
+RECORD_TYPE               = STREAM
+OBJECT                    = INSTRUMENT_HOST
+  INSTRUMENT_HOST_ID      = SLN
+
+  OBJECT                  = INSTRUMENT_HOST_INFORMATION
+    INSTRUMENT_HOST_NAME  = SELENE
+    INSTRUMENT_HOST_TYPE  = SPACECRAFT
+    INSTRUMENT_HOST_DESC  = "
+
+    SELENE Systems
+    ==============
+
+    SELENE satellite consists of main orbiter, relay-satellite, and VRAD 
+    satellite. 
+    Main orbiter is composed with upper module and lower module.
+
+    System Configuration 
+    --------------------
+
+    * Overall systems
+
+    Launch Period
+        2007
+    Launch Rocket
+        H-IIA Single Launch
+        4S Fairing    
+        2360SA PAF
+    System Configuration
+        Main Orbiter, Upper Module and Lower Module
+        Relay sub-satellite (Rstar)
+        VRAD sub-satellite (Vstar)
+    Mission Period
+        1 year nominal
+    Mass
+        Total Launch Mass: 2,885 kg (TBD)
+        Main Orbiter: 1,732 kg (TBD)
+          Fuel      : 1,045 kg (TBD)
+        Rstar       : 54 kg (TBD)
+        Vstar       : 54 kg (TBD)
+    Electric Power
+      Main Orbiter
+        Generated   b=0  deg  >= 3,480 W
+                    b=30 deg     4,000 W
+                    b=90 deg  >= 1,930 W
+        Consumed    b=0  deg     3,090 W
+        (nominal)   b=90 deg     1,930 W
+      Relay satellite
+        Generated  >=70 W
+        Consumed     47 W
+      VRAD satellite
+        Generated  >=70 W
+        Consumed     47 W
+    Ground Station
+        Tracking; JAXA GN, UDSC (backup), DSN (critical) 
+        Data acquisition; UDSC, USC (backup), ESTRACK(TBD)
+        SELENE Operation and Data Analysis Center (SOAC) 
+        VLBI ground stations
+
+    * Science Instruments
+
+    Main Orbiter
+        X-ray Spectrometer (XRS)                           :  21.9 kg
+        Gamma-ray/Charged Particle Spectrometer (GRS/CPS)  :  52.5 kg
+        Lunar Imager/Spectrometer (LISM)                   :  54.0 kg
+        Lunar Radar Sounder (LRS)                          :  22.8 kg
+        Laser Altimeter (LALT)                             :  20.0 kg
+        Magnetic Field and Plasma measurements (MAP)       :  38.3 kg
+        Upper-atmosphere and Plasma Imager (UPI)           :  42.0 kg
+        Transponder opposed to Rstar (RSAT-2)              :   3.9 kg
+        High Definition Television System (HDTV)           :  16.5 kg
+        Total                                              : 271.9 kg
+    Relay satellite
+        Relay Satellite Transponder (RSAT)                 :  12.8 kg
+        Differential VLBI Radio Source (VRAD-1)            :   2.2 kg
+    VRAD satellite
+        Differential VLBI Radio Source (VRAD-2)            :  10.2 kg
+
+    Configuration of Main Orbiter
+    -----------------------------
+
+    * Main Orbiter System
+
+    Nominal Orbit
+        Altitude : 100+/-30 km
+        Inclination : 90 deg. Circular
+        Period : ca. 118 min.
+    Attitude Control
+        Nominal Mission
+            3-axis Stabilized, +Z axis align; normal of lunar surface,
+            X-Z axis; orbital plane
+        Yaw-around
+            2 times/year at b=0 deg
+    Mission Period
+            One year; nominal mission operation
+
+    * Bus Systems
+
+    Structure
+        Type
+            Panel
+        Outer Dimension
+            Upper module: 2.1 X 2.1 X 2.8 m3
+            Lower module: 2.1 X 2.1 X 1.4 m3
+            Adopter truss: 2.2 m octagonal prism X 0.6 m
+    Thermal Control
+        Type
+            Passive/Active
+        Heat Radiation Plane
+            Lunar Opposition Plane/ Opposition Plane of
+            Solar Paddle Support
+        T/C for Science Instruments      
+            Exposed Equipments: independent
+            Inner Electronics Equipments: dependent
+        Components
+            Heater, MLI, Thermal Lubber, Thermal Dabbler, OSR etc
+    Attitude-orbital Control 
+        Type
+            3-axis Stabilized
+        Nominal Circum Lunar Orbit
+            Attitude Control Accuracy: +/- 0.1 deg. In each axis 
+            Attitude Stability: +/- 0.003 deg./s in each axis 
+            Attitude Knowledge Accuracy: +/- 0.025 deg. In each axis 
+        AOCE Faculty
+            Lunar Orbit Insertion Control
+            Circum Lunar Attitude Control
+            Circum Lunar Orbital Control
+        Sensors
+            Solar Sensor, Star Sensor, Inertial Measurement Unit
+        Actuators
+            Wheel, Thruster
+    Electric Power
+        Bus type
+            Non-stabilized Single Bus
+        Bus Voltage
+            Sunny; 50.9 - 52.8 V, Eclipse; 32.6 - 51.2 V
+        Battery Capacity
+            Ni-Cd 35 Ah,  4 units
+                
+    * Bus Sub-system
+
+    Solar Cell Paddle
+        Paddle Type
+            1 Wing, 1-axis Rotating, Fixed Cant
+        Paddle Generated Power
+            b=0 deg.: 3,480 W (EOL)
+            b=90 deg.: 1,930 W (EOL)
+        Paddle Size
+            22.6 m2 (2385X3159 3 plates)
+        Cell Type
+            Dual Junction Solar Battery Cell
+    Communication
+        Frequency
+            X-band (Mission Telemetry),
+            S-band (Command/Bus Telemetry)
+        Transmission Rate
+            Commands: 1000 bps
+            Telemetry:  2 kbps for Low-bit rate, 
+                       40 kbps for High-bit rate.
+            Mission Data: 10 Mbps
+        Antenna Configuration
+            160 cm diameter. High Gain Antenna (S/X common used)
+            Omni-directional Antenna for S-band; 4 pieces
+    Data Handling
+        Encoding Scheme
+            Applicable CCSDS Standards
+        Data-bus Scheme
+            MIL-1553B Standards
+        Data Recorder
+            MDR: 100 Gbits Memory Capacity
+    Propulsion
+        Method
+            Dual-liquids Mode (ME Pressure Control/ RCS Blow Down) 
+        Propulsion liquids
+            NTO/N2H4
+        Thruster Configuration
+            500N (2 liquids) Thruster:  1 Piece
+             20N (1 liquid)  Thruster: 12 Pieces
+              1N (1 liquid)  Thruster:  8 Pieces
+        Propulsion Vessel
+            N2H4: 820 mm Diameter/1170 mm Length 2 Pieces
+            NTO:  820 mm Diameter Sphere 1 Piece
+            GHe:  406 mm Diameter/ 660 mm Length 2 Pieces
+        Mass
+            N2H4: 710 kg (Nominal)
+            NTO:  330 kg (Nominal)
+            GHe:  5.4 kg (TBD)
+    Monitor Camera
+        CCD Camera 4 Pieces
+    Integration
+        Electrical Integration
+            Cabling
+        Mechanical Integration
+            Brackets
+
+    Configuration of Relay Satellite (Rstar)
+    ----------------------------------------
+
+    * Relay-satellite System
+
+    Mission Orbit at Separation from Main Orbiter
+        100 X 2400 km, elliptical, Inclination 90 deg., Orbital Period 240
+        minutes
+    Mission Period
+        Nominal One Year
+    Attitude Control
+        Spin-stabilized
+
+    * Relay-satellite Bus Subsystem
+
+    Power Supply
+        Components Power
+            Control Unit (PCU), Battery (BAT)
+        Bus Voltage
+            Assembled: +0 Volt, -1.5 Volt
+            Separated: 35 Volt
+        Battery Capacity Ni - MH, 13AH 1 series
+        Before separation electric power is supplied from upper module.
+    Thermal Control
+        Method
+            Passive/Active Parallel Use
+        Heat Radiation
+             +/-X plane, Upper/Lower Decks
+        Thermal Control of Science Instruments
+            Inner equipment electronic dependently controlled
+            Antenna equipped outside independently controlled
+        Components
+            Heater, MLI, Ag-Teflon sheet, etc
+    Structure
+        Type
+            Octahedral Panel Structure 
+        Outer Dimension
+            990 X 990 X 650 mm Octahedral Prism
+        IF with Upper Module
+            Separation Mechanism
+        Separation Mechanism
+            Constant Tension Spring / Guide-roll up
+        S/M Dimension
+            500 diameter X 150 mm Length Cylindrical
+    Integration
+        Components
+            Umbilical Separation Mechanism, Fastener, Cable, Counter-weight
+
+    Configuration of VRAD Satellite (Vstar)
+    ----------------------------------------
+
+    * VRAD-satellite System
+
+    Mission Orbit at Separation from Main Orbiter
+        100 X 800 km, elliptical, Inclination 90 deg., Orbital Period 150 
+        minutes
+    Mission Period
+        Nominal One Year
+    Attitude Control
+        Spin-stabilized
+
+    * VRAD-satellite Bus Subsystem
+
+    Power Supply
+        Components
+            Power Control Unit (PCU), Battery (BAT)
+        Bus Voltage
+            Assembled: +0 Volt, -1.5 Volt
+            Separated: 35 Volt
+        Battery Capacity
+            Ni - MH, 13AH 1 series
+            Before separation electric power is supplied from upper module.
+    Thermal Control
+        Method
+            Passive/Active Parallel Use
+        Heat Radiation
+             +/-X plane, Upper/Lower Decks
+        Thermal Control of Science Instruments
+            Inner equipment electronic dependently controlled
+            Antenna equipped outside independently controlled
+        Components
+            Heater, MLI, Ag-Teflon sheet, etc
+    Structure
+        Type
+            Octahedral Panel Structure 
+        Outer Dimension
+            990 X 990 X 650 mm Octahedral Prism
+        IF with Upper Module
+            Separation Mechanism
+        Separation Mechanism
+            Constant Tension Spring / Guide-roll up
+        S/M Dimension
+            500 diameter X 150 mm Length Cylindrical
+    Integration
+        Components
+            Umbilical Separation Mechanism, Fastener, Cable, Counter-weight
+
+
+    Spacecraft Bus Subsystems
+    =========================
+
+    Mechanical Structure Subsystem (STR)
+    ------------------------------------
+    Structure subsystem (STR) is a basic structure element of SELENE spacecraft, 
+    which has faculty of sustaining and holding all payloads including the solar 
+    paddle, antennas and outside components in allover operation period from 
+    ground tests to orbital operation.
+    STR is composed of Upper Module and Lower Module, which is separable in the 
+    ground tests. 
+
+    Thermal Control Subsystem (TCS)
+    -------------------------------
+    TCS will keep spacecraft components in predominant ranges of temperature 
+    from launch to end of mission using parallel passive thermal control scheme 
+    and active one. SELENE will realize thermal control under saving electric 
+    power and mass resourceÅAalthough spacecrafts receive characteristic lunar 
+    environments of strong infrared radiation from lunar surface, and long 
+    eclipse entering into Earth's shadow, which the spacecrafts orbiting the 
+    Earth never experience in their orbits.  
+    The SELENE spacecrafts will plan to be operated autonomously using onboard 
+    controlled heaters.
+
+    Attitude and Orbit Control Subsystem (AOCS)
+    -------------------------------------------
+    The AOCS will provide attitude acquisition and control using Sun Sensor and 
+    Star Tracker scanned by the spacecraft rotation motion, and control pointing 
+    of the HGA and the solar paddle. In the cruising and mapping orbit the Star 
+    Tracker and the Inertial Measurement Unit (IMU) will provide attitude 
+    controls and knowledge. 
+    During the lunar orbiting phase, nadir orientation of the spacecraft will be 
+    maintained as specified below. The AOCS will provide a spacecraft attitude 
+    that supports continuous and simultaneous data taking by all science 
+    instruments. The AOCS will also be capable of pointing the body mounted 
+    science instruments at arbitrary targets in the celestial frame.
+    The fundamental reference direction is nadir direction. The +Z axis (nadir 
+    direction) is defined by a line passing through the spacecraft perpendicular 
+    to the lunar reference spheroid. The +X axis is defined to lie in a plane 
+    perpendicular to the nadir direction and along the projection of the 
+    velocity vector on this plane. The +Y axis also lies in this plane and is 
+    orthogonal to both the +Z and +X axes, forming a right-handed coordinate 
+    system. As defined, the +X axis will be close to, but not always coincident 
+    with, the direction of the spacecraft velocity vector, and the +Y axis will 
+    be close to, but not always coincident with, the orbit normal.
+
+"
+  END_OBJECT         = INSTRUMENT_HOST_INFORMATION
+END_OBJECT           = INSTRUMENT_HOST
+
+END

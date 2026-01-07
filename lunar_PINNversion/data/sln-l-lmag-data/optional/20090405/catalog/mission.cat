@@ -1,0 +1,465 @@
+PDS_VERSION_ID         = PDS3
+RECORD_TYPE            = STREAM
+OBJECT                 = MISSION
+  MISSION_NAME         = "SELENE"
+  OBJECT               = MISSION_INFORMATION
+    MISSION_START_DATE = 2007-TBD
+    MISSION_STOP_DATE  = "NULL"
+    MISSION_ALIAS_NAME = "SLN"
+    MISSION_DESC       = "
+
+    Mission Overview
+    ================
+
+    The Selenological and Engineering Explorer (SELENE) will be launched by H-
+    IIA rocket in 2007. Major objectives of the mission are to obtain scientific
+    data for study about the origin and evolution of the moon, and to develop 
+    technology for the lunar orbit insertion and spacecraft attitude and orbit 
+    control. The scientific data will be also used for exploring the 
+    possibilities of future utilization of the moon. 
+    The SELENE spacecraft consists of main orbiter, relay-satellite, and VRAD 
+    satellite. After lunar orbit insertion of the SELENE satellite two sub-
+    satellites will be separately released into operational orbits for rely-
+    satellite and VRAD satellite. After the release of subsatellites the main
+    orbiter will reduce altitude to nominal circular orbit, following 12 months
+    mission operation. 
+    SELENE has a possibility of extending an optional mission after nominal 
+    operation period. 
+
+    Principal objective of SELENE project is to acquire observation data 
+    globally in order to progress the "lunar science" for investigation of the 
+    origin and evolution of the Moon, and to survey the possibility of 
+    utilization of the Moon. 
+    The project also possesses an objective in technological development and 
+    accumulation of lunar orbit insertion and attitude control in lunar orbiting 
+    in order to promote systematically and continuously lunar exploration.
+
+    SELENE consists of a main orbiter and two sub satellites, Relay-satellite 
+    (RSTAR) and VRAD-satellite (VSTAR). Main orbiter is composed with upper 
+    module mounting science instruments and bus-system instruments except for 
+    propulsion and battery systems, and lower module onboading propulsion and 
+    battery systems.
+    SELENE satellite assembled of the main orbiter, RSTAR and VSTAR will insert 
+    into the trans-lunar orbit using an H-IIA rocket. After the SELENE 
+    spacecraft enters into a circular lunar orbit, the Rstar and Vstar 
+    separately insert into lunar ecliptic orbits, which acquire selenological 
+    data such as gravity data for one year. Main orbiter observes the Moon using 
+    scientific instruments from circular orbit of altitude 100 km for one year 
+    of nominal period.
+    JAXA tracking stations will be used primarily for tracking and operation for 
+    initial cruising stage. Scientific data are received in JAXA UDSC (Usuda 
+    Deep Space Center) and USC (Uchinoura Space Center) antennas. Satellite 
+    operation and initial analysis of scientific data and bus data will be 
+    performed in SELENE Operation and data Analysis Center (SOAC).
+
+    Mission Phases
+    ==============
+ 
+    PRELAUNCH
+    ---------
+      Mission Phase Start Time  : ???
+      Mission Phase Stop Time   : 2007-TBD
+
+    LAUNCH
+    ------
+      Mission Phase Start Time  : 2007-TBD
+      Mission Phase Stop Time   : 2007-TBD
+
+    TRANS-LUNAR ORBIT INJECTION
+    ---------------------------
+      Mission Phase Start Time  : 2007-TBD
+      Mission Phase Stop Time   : 2007-TBD
+
+    LUNAR ORBIT INJECTION
+    ---------------------
+      Mission Phase Start Time  : 2007-TBD
+      Mission Phase Stop Time   : 2007-TBD
+
+    SCIENCE OBSERVATION
+    -------------------
+      Mission Phase Start Time  : 2007-TBD
+      Mission Phase Stop Time   : 2008-TBD
+
+    OPTIONAL MISSION
+    ----------------
+      Mission Phase Start Time  : 2008-TBD
+      Mission Phase Stop Time   : TBD
+"
+  MISSION_OBJECTIVES_SUMMARY = "
+
+    Mission objectives
+    ==================
+    SELENE mission has major objectives relevant with lunar science including
+    investigation of future utilization, and engineering developments.
+
+    Orbital science missions are issued as follows;
+    - Global observation by X-ray spectrometer, gamma-ray spectrometer, lunar
+      imager/spectrometer, lunar sounder and lunar magnetometer.
+    - Measurement of lunar environment by charged particle spectrometer, plasma 
+      instrument, lunar magnetometer, electromagnetic wave receiver onboard 
+      lunar sounder equipment.
+    - Differential VLBI measurement by radio sources.
+      Plasma measurement of terrestrial ionosphere by upper atmosphere plasma 
+      imager.
+    - Detection of tenuous ionosphere by radio science.
+    - Observation of planetary electromagnetic wave by passive wave receiver.
+    - Gravity measurements of lunar far-side by four-way Doppler via relay 
+      satellite.
+    - High spatial resolution measurement by magnetometer, gravity, and gamma-
+      ray spectrometer in optional extended mission period.
+    - Broadcast of high definition images of the Earth and the Moon.
+
+    The mission objectives in engineering development are as follows;
+    - Successful injection of SELENE satellites into nominal lunar orbits.
+    - Successful 3-axis stabilized attitude control and orbit correction 
+      maneuver in orbiting the Moon.
+    - Acquisition of navigation data for obstacle detection and high speed data 
+      handling technologies in future landing mission.
+
+    Instruments Summary
+    ===================
+
+    X-ray Spectrometer (XRS)
+    ------------------------
+    Investigation Description. 
+    XRS sensors are developed to determine the surface chemical composition by
+    measuring X-ray fluorescence of major elements radiated by the solar X-ray.
+    Elemental abundances will provide us basic clue to understanding the lunar 
+    origin of formation and evolution. Absolute elemental abundances of 90% 
+    surface area for major elements of Al, Si, Mg, and Fe will be determined 
+    within 10% uncertainty in the normal quiet sun. In high solar activity 
+    secondary major elements such as Na, Ca, Ti are certainly excited over the 
+    detection limits. 
+    Spatial resolution of 20 km of lunar surface will be realized from altitude 
+    of 100 km orbit. This requirement is estimated by minimum size of flat 
+    floored type craters, which has possibility of resurfacing the rock type 
+    different from surrounding crater ejecta. This size is a minimum scale of 
+    geological structure necessary to determine the bulk composition of lunar 
+    crust.
+
+      Specification of XRS
+      X-ray Fluorescence detector (XRF-A): X-ray detectable Charge Coupled 
+      Device (CCD), ca.100 cm2 of effective detection area, spatial resolution 
+      20 km @100 km altitude. 
+      Solar X-ray monitor (SOL-BC): PIN Photo-diode and X-ray detectable CCD
+      Electronics (XRS-E): detector control, data processing, data handling and 
+      electric power supply.
+
+    Gamma-ray Spectrometer and Charged Particle Spectrometer (GRS/CPS)
+    ------------------------------------------------------------------
+    Gamma-ray spectrometer and charged particle spectrometer commonly use data 
+    handling electronics, which interfaces with Data Handling (DH) subsystem of 
+    spacecraft.
+
+      Gamma-Ray Spectrometer (GRS)
+      ----------------------------
+      Investigation Description
+      GRS instrument will measure gamma-rays with 100 keV to 10 MeV. The primary 
+      object is to provide global mapping data on the lunar surface abundance of
+      a series key elements such as U, Th, K, O, Si, Mg, Fe, Ti, Ca, Al and H.
+      The abundance of water ice in the permanently shaded craters at both lunar
+      poles will clearly be determined by this mission. These measurements in 
+      combination with mineralogical data from other instruments will 
+      significantly improve our understanding of the composition and structure
+      of the lunar crust, refractory element content of the bulk Moon, and the
+      nature of impact processes. 
+
+        Specification of GRS
+        Gamma-ray Detector (GRD): N-type coaxial high-purity Germanium (HP-Ge) 
+        crystal with ca. 250 cc volume, Cooling by Stirling mechanical 
+        refrigerator to 90 K, 
+        Anticoincidence shield of Bismuth Germanate (BGO) and plastic
+        scintillater.
+        Spatial resolution of 120 km @100 km altitude.
+        Cooler Driving Unit (CDU): DC/AC power supply for Stirling refrigerator.
+        Electronics (GPE): common use with CPS for sensor control, data-
+        processing, 
+        data handling, and electric power supply.
+
+      Charged Particle Spectrometer (CPS)
+      -----------------------------------
+      Investigation Description
+      The CPS will used to measure charged particle environment of the Moon; 
+      alpha-particle from the lunar surface, and cosmic ray particle in circum-
+      lunar interplanetary space. Alpha-particle indicates Rn-gas outflow from 
+      lunar surface due to tectonic activity. Silicon detectors measure the
+      kinds and energy range of cosmic ray particles such as electron, proton,
+      He, O, and Fe varying with time and space.
+
+        Specification of CPS
+        Alpha-ray Detector (ARD): Silicon detectors of effective area of 300
+        cm2.
+        High energy Isotope Detector and Low energy Particle Detector (HID/LPD): 
+        Silicone detectors for 0.3 to 1 MeV of electrons, 0.1 to 60 MeV of 
+        protons, and 2.5 to 370 MeV/n of heavy ions.  
+
+    Lunar Imager/ Spectrometer (LISM)
+    ---------------------------------
+    LISM consists of three sub-systems of Terrain Camera (TC), Multi-band Imager 
+    (MI), and Spectral Profiler (SP) which share some parts of structure and 
+    electronics. It will obtain topographic and compositional data of the Moon 
+    surface which can be used for mapping of detailed geological units of the 
+    Moon surface and identifying materials in each unit. The quality of the data 
+    obtained by LISM will be much higher in spatial resolution, wavelength 
+    resolution, and S/N than that by past lunar missions. The sensors are 
+    controlled and acquired data are compressed by common data processing unit 
+    (DPCU). Electric power are supplied to each subsystem by a commonly used 
+    unit (PCDU).
+
+      Multi-band Imager (MI)
+      ----------------------
+      Investigation Description
+      MIis a high-resolution multi-band imaging camera consisting of two sub-
+      systems; 
+      MI-VIS for visible imagery and MI-NIR for near infrared imagery. Each
+      system has a same type of nadir-directed telescope of 65 mm of focal
+      length and a different two-dimension detector. MI takes push-broom imaging
+      data by using five bands for MI-VIS and four bands for MI-NIR to identify
+      types of soils and rocks. MIspatial resolution is 20 m for MI-VIS and 60 m
+      for MI-NIR, which is adjusted for detailed investigation of interesting
+      structures and material distributions on the Moon.
+
+        Specification of MI
+        Sensors: Si-CCD and InGaAs
+        Optics/imaging: two reflecting telescopes/ push-broom type.
+        FOV/Foot print: 11 degrees/ 19.3 km @100km altitude.
+        Detectable wavelength range/band quantity/band width: 0.4-1.6um/ nine 
+        bands/ 20-50nm.
+
+      Spectral Profiler (SP)
+      ----------------------
+      Investigation Description
+      SP is a visible to near-infrared line profiling spectrometer. Its primary 
+      science goal is to map the rock type and mineral abundance/composition on 
+      the lunar surface globally through reflectance spectroscopy in the 500 - 
+      2600 nm region with unprecedented high spectral resolution and S/N.
+
+        Specification of SP
+        Sensors: one-dimensional photodiode array for visible range and InGaAs
+        for near-infrared range 
+        Optics/wavelength dispersion: Cassegrain-type foreoptics/Plane grating 
+        Observational wavelength range: 0.5-2.6um
+        Wavelength resolution: 6-8 nm
+
+      Terrain Camera (TC)
+      -------------------
+      Investigation Description
+      TC is a push-broom imaging camera with a spatial resolution of 10 m from
+      100 km altitude. It has two slant telescopes for stereo imagingÅBThe 
+      stereoscopic observation of TC will be carried out at the middle solar 
+      elevation angle conditions. The single-eyed observation will be also
+      planned at the low solar angle (<30ÅK) conditions for detailed
+      investigation of surface features of the Moon. TC will expand the coverage
+      to almost all of the Moon and that in the form of digital data. The global
+      and detailed investigation of the topography and geographical features of
+      the Moon will be achieved by TC data.
+
+        Specification of TC
+        Sensor: Si-CCD
+        Optics/ Imaging: two reflecting telescopes/ push-broom type.
+        Field Of View/Foot print: 20 degrees/ 35 km @100km altitude.
+
+    Lunar Radar Sounder (LRS)
+    ------------------------
+    Investigation Description
+    LRS will survey the subsurface structure of the Moon by analyzing 
+    electromagnetic HF signals which are radiated from spacecraft and reflected 
+    from lunar surface and subsurface. The sounder mode operation of LRS will 
+    investigate the tectonics of the Moon.
+    LRS also observes natural radio waves of Sun, terrestrial and planetary 
+    bodies in the lunar orbit of far-side quiet environment using onboard wide-
+    range and high sensitivity radio-wave receiver. 
+
+      Specification of LRS
+      Antenna: 2 pairs of 30 m tip-to-tip dipole antenna for Tx and Rx using 15m
+      bi-stem antenna elements. 
+      Electronics: for sounder operation, consumption electric power of 51 W, 
+      frequency of 4 - 6 MHz FM (1 and 15 MHz optional), Tx pulse width of 200 
+      usec, pulse repetition of 50 msec, sweep rate of 10 kHz/usec, output power 
+      of 800 W, echo observation range of surface +5 km - -25 km, range 
+      resolution of 75 m, receiver sensitivity of less than 0.3 uVrms. For 
+      passive mode, electric power of 25 W, observation mode of Dynamic Spectrum
+      (DS), Polarization Spectrum (PS) and Waveform Capture (WFC), frequency 
+      range of 10 - 30 MHz
+
+    Laser Altimeter (LALT)
+    ----------------------
+    Investigation Description
+    LALT transmits laser pulses to nadir direction and measures the round trip 
+    time to the surface of the moon to determine the topography of the Moon 
+    globally including its polar regions. LALT builds a spherical harmonic 
+    expansion model of the lunar topography with much higher order degrees than 
+    that made previously by Clementine mission so on. LALT constructs a grid map 
+    of topography, which provides the absolute reference to the DEM (Digital 
+    Elevation Map) produced by TC(Terrain Camera).
+
+      Specification of LALT
+      Laser:  Nd:YAG; wavelength of 1064 nm, 100 mJ output, 1 Hz repetition 
+      rate.
+      Collimator: Galilei refractor type with 7.3 cm diameter.
+      Telescope: Cassegrain type, focal length 300 mm with 11 cm diameter 1mrad 
+      field of view.
+      Detector: Si-APD, 10nm band pass filter.
+      Along track spacing: 1.6 km
+      Footprint: 30 m in diameter. 
+
+    Magnetic Field and Plasma Experiment (MAP)
+    ------------------------------------------
+    Lunar Magnetometer (LMAG) and Plasma energy, Angle and Composition 
+    Experiment (PACE) commonly use an electronics box (MAP-E) to interface with 
+    the handling unit of bus subsystem.
+
+      Lunar Magnetometer (LMAG)
+      -------------------------
+      Investigation Description
+      LMAG will observe the lunar and its surrounding magnetic fields for 
+      magnetization structure of the lunar magnetic anomalies, deformation of 
+      magnetic fields by the Moon and solar wind interaction, and electric 
+      conductivity structure of the lunar interior observing induced field.
+      Three component fluxgate magnetometer will be mounted on the top of 12 m 
+      extendable mast. The sensor alignment will be frequently monitored+/- due
+      to short time repetition of day and night in orbiting the Moon.
+
+        Specification of LMAG
+        Sensor (MGF-S): Dynamic range of +/-32, +/-256, +/-1024 and +/-65536 nT; 
+        accuracy of 0.5 nT.
+        Mast (MST-S): 12 m length with sensor direction monitor.
+
+      Plasma energy, Angle and Composition Experiment (PACE)
+      ------------------------------------------------------
+      Investigation Description
+      PACE will carry out energy- and mass-analysis of electrons and ions in 
+      circum lunar space in order to study Moon-Solar wind interaction, Moon- 
+      Earth' magnetosphere interaction, sputtering process of surface
+      constituent elements by solar wind, and lunar surface remnant magnetic
+      field.  PACE consists of IMA (Ion Mass Analyzer) IEA (Ion Energy Analyzer)
+      and two ESA (Electron Spectrum Analyzer) sensors. These sensors have an
+      axial symmetric structure around rotation axis and keep a field of view 
+      2*PI str using azimuth direction sweep of electrostatic polarizer. The
+      whole direction observation is realized by pair of sensors onboard opposed
+      spacecraft panels. A top hat electrostatic analyzer placing angular
+      scanning deflectors will measure 3D analysis of electron energy. 
+      IMA additionally equips an ion mass analyzer of LEF(Linear Electric 
+      Field)/TOF (Time Of Flight) type.
+
+        Specification of PACE
+        Ion Mass Analyzer (IMA): Energy range of 5 eV/q - 28 keV/q, Mass range
+        of 1 - 60, install on +Z panel.
+        Ion Energy Analyzer(IEA): Energy range of 5 eV/q - 28 keV/q,install on
+        -Z.
+        Electron Spectrum Analyzer (ESA): Energy range of 5 eV/q - 17 keV/q, 
+        install on +Z and -Z panels.
+        Electronics (MAP-E): common use with LMAG for sensor control, data-
+        processing, 
+        data handling, and electric power supply.
+
+    Upper-atmosphere and Plasma Imager (UPI)
+    ----------------------------------------
+    Investigation Description
+    Lunar orbiter SELENE is an ideal platform for simultaneous aurora imaging of 
+    Earth's both Polar Regions. The Earth from the lunar orbit is a disk of only 
+    2 degrees, thus aurora imaging of both pole can be achieved simultaneously 
+    with small distortion. Moon has no atmosphere, which leads no active 
+    emission of light near the spacecraft, thus we will have a high quality 
+    imaging. UPI will observe ionosphere to magnetosphere of the Earth in the 
+    range of visible to ultraviolet light. 
+
+      Specification of UPI
+      Visible Imager (UPI-TVIS): Schmidt-CaÇìsegrain optics, FOV of 2.38 X 2.38 
+      degrees and 0.0047 deg. resolution, CCD with Peltier cooler.
+      Extreme Ultra-violet Imager (UPI-TEX): Mo/Si multi-layer coated mirror, 
+      detector of MCP with 2D resistive anode, FOV of 10 X10 degrees with angle
+      resolution of 0.08 degrees.
+      Gimbals (UPI-G): view direction control installed on the X-panel.
+      Electronics (UPI-E): sensor control, data-processing, data handling, and 
+      electric power supply.
+
+    Radio Science (RS)
+    ------------------
+    Investigation Description
+    RS will try to confirm the existence of lunar ionosphere by the radio 
+    occultation technique. RS receives the radio waves from VRAD satellite and 
+    detect the small deviation of the frequency influenced by the lunar 
+    ionosphere at lunar occultation of VRAD satellite. Non-modulated, coherent 
+    signal of s/x frequencies transmitted from the VRAD satellite are received 
+    by UDSC 64 m antenna.
+
+    Four-way Doppler Measurements by Transponders onboard Relay Sub-satellite  
+    (RSAT-1) and main orbiter (RSAT-2)
+    --------------------------------------------------------------------------
+    Investigation Description
+    RSAT plans satellite to satellite Doppler measurement by using relay sub-
+    satellite (Rstar) to the main orbiter behind the Moon. A complete coverage 
+    of Doppler tracking from the orbiter at sufficient low altitude will 
+    significantly improve lunar gravity model and will contribute for future 
+    geophysical study of interior and tectonics on the Moon. RSAT is a 
+    communication subsystem on the Rstar for 4-way Doppler tracking among the 
+    main orbiter, the Rstar, and Usuda Deep Space Center as well as 2-way range 
+    and Doppler measurements between the Rstar and UDSC. Two transponders, RSAT-
+    1 and RSAT-2 are installed in the Rstar and the main orbiter. 
+
+      Specification of RSAT
+      Relay satellite transponder (RSAT-1): S-band receiver, transmitter, S-X 
+      frequency, command decoder, telemetry encoder, S/X power amplifier, S-band 
+      diplexer, power supply. 
+      Antenna: S-band dipole antenna, S-band omni-directional antenna, X-band 
+      dipole antenna.
+      Transponder onboard main orbiter opposed to Rstar (RSAT-2): S-band 
+      receiver and transmitter, S-band diplexer.
+
+    VLBI Radio Source (VRAD-1, VRAD-2)
+    ----------------------------------
+    Investigation Description
+    VRAD mission measures angular distances between two radio sources (VRAD-1 
+    and VRAD-2)onboard Rstar and Vstar orbiting the Moon, and Quasars by
+    differential VLBI. VRAD improves accuracy of selenodetic parameters 
+    particularly spherical harmonics of the lunar gravitational field by one or 
+    two orders in cooperation with 4-way Doppler measurements and 2-way Doppler 
+    and ranging measurements between the main orbiter and the Rstar. A VLBI 
+    ground network with 2000 km baseline can determine a phase delay with the 
+    accuracy of 3.3 ps for using carrier wave of X-band (8.4GHz) with 0.17 rad. 
+    (10 degrees) sensitivity, which is equivalent to the accuracy in angular 
+    distance of 5.3 Å~ 10-10 (1.1 Å~ 10-4arcsec) or about 20 cm on the Moon.  
+
+      Specification of VRAD-1 and VRAD-2
+      Transmitter: 3 S-band carrier waves and X-band wave.
+      Antenna: S-band dipole antenna, X-band dipole antenna
+      VRAD-2 equips S-band receiver, diplexer, telemetry encoder and command 
+      decoder.
+
+    High Definition Television System (HDTV)
+    ----------------------------------------
+    Investigation Description
+    HDTV will take pictures and movies of the Moon and the Earth such as "Earth 
+    rise" by high definition television cameras. Clear and vivid pictures from 
+    the space take advantages in promoting popular understandings of space and 
+    space development by Japanese nation, furthermore, give dreams and interests 
+    in science technology to young nation of next generation. 
+    HDTV uses wide-angle and telescopic color cameras with fixed focal length.
+       
+      Specification of HDTV
+      Detectors: 3 CCD chips with 1920 Å~ 1080 pixels.
+      FOV: 50.2 Å~ 28.2 degrees for wide angle, 15.6 Å~ 8.8 degrees for 
+      telescopic.
+      Exposure: Sampling interval of 1/59.94 seconds using an electronic 
+      shutter.
+      Operation mode: Movie mode, still mode.
+      Data compression: Flame compression (DCT scheme).
+      Semiconductor memory: ca. 2 Gbyte (corresponds to ca. 1 minute movie 
+      data).
+      Maximum transfer rate: 7.6 Mbps (RS-422, CCSDS packeting scheme).
+
+"
+  END_OBJECT         = MISSION_INFORMATION
+
+  OBJECT             = MISSION_HOST
+    INSTRUMENT_HOST_ID = SLN
+
+    OBJECT             = MISSION_TARGET
+      TARGET_NAME      = MOON
+    END_OBJECT         = MISSION_TARGET
+
+  END_OBJECT           = MISSION_HOST
+END_OBJECT           = MISSION
+
+END

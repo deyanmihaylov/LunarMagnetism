@@ -9,7 +9,10 @@ import math
 from torch.cuda.amp import autocast, GradScaler
 import numpy as np
 from torch.optim.lr_scheduler import ExponentialLR
-from lunar_PINNversion.evaluation.mollweide_plot import plot_three_component_mollweide, plot_four_component_mollweide
+from lunar_PINNversion.evaluation.mollweide_plot import (
+    plot_three_component_mollweide,
+    plot_four_component_mollweide,
+)
 from lunar_PINNversion.dataloader.util import spherical_to_cartesian
 import wandb
 

@@ -844,32 +844,55 @@ class PINN(nn.Module):
 
         # Create meshgrid in spherical coordinates
         # meshgrid(..., indexing='ij') gives shape [r, theta, phi]
-        R_lunar_surface, Theta, Phi = torch.meshgrid(r_lunar_surface, theta_linspace, phi_linspace,
-                                                     indexing='ij')
-        R_orbit_surface, Theta, Phi = torch.meshgrid(r_BC_surface, theta_linspace, phi_linspace,
-                                                     indexing='ij')
+        R_lunar_surface, Theta, Phi = torch.meshgrid(
+            r_lunar_surface, theta_linspace, phi_linspace,
+            indexing='ij',
+        )
+
+        R_orbit_surface, Theta, Phi = torch.meshgrid(
+            r_BC_surface, theta_linspace, phi_linspace,
+            indexing='ij',
+        )
         # Convert spherical to Cartesian (vectorized)
         X_0, Y_0, Z_0 = spherical_to_cartesian(R_lunar_surface, Theta, Phi)
         X_BC, Y_BC, Z_BC = spherical_to_cartesian(R_orbit_surface, Theta, Phi)
         # Stack into single tensor if needed
-        grid_mesh_eval_xyz_0 = torch.stack((X_0.ravel(), Y_0.ravel(), Z_0.ravel()), dim=-1)
-        grid_mesh_eval_xyz_0 = torch.tensor(grid_mesh_eval_xyz_0, dtype=torch.float32,
-                               requires_grad=True).to(self.device)
+        grid_mesh_eval_xyz_0 = torch.stack(
+            (X_0.ravel(), Y_0.ravel(), Z_0.ravel()),
+            dim=-1,
+        )
+        grid_mesh_eval_xyz_0 = torch.tensor(
+            grid_mesh_eval_xyz_0,
+            dtype=torch.float32,
+            requires_grad=True,
+        ).to(self.device)
         phi_pred_0 = self(grid_mesh_eval_xyz_0)
-        grad_phi_0 = torch.autograd.grad(outputs=phi_pred_0, inputs=grid_mesh_eval_xyz_0,
-                                         grad_outputs=torch.ones_like(phi_pred_0),
-                                         create_graph=True)[0]
+        grad_phi_0 = torch.autograd.grad(
+            outputs=phi_pred_0,
+            inputs=grid_mesh_eval_xyz_0,
+            grad_outputs=torch.ones_like(phi_pred_0),
+            create_graph=True,
+        )[0]
 
         B_pred_0 = (-1 * grad_phi_0).cpu().detach().numpy()
 
-        grid_mesh_eval_xyz_BC = torch.stack((X_BC.ravel(), Y_BC.ravel(), Z_BC.ravel()), dim=-1)
-        grid_mesh_eval_xyz_BC = torch.tensor(grid_mesh_eval_xyz_BC, dtype=torch.float32,
-                               requires_grad=True).to(self.device)
+        grid_mesh_eval_xyz_BC = torch.stack(
+            (X_BC.ravel(), Y_BC.ravel(), Z_BC.ravel()),
+            dim=-1,
+        )
+        grid_mesh_eval_xyz_BC = torch.tensor(
+            grid_mesh_eval_xyz_BC,
+            dtype=torch.float32,
+            requires_grad=True,
+        ).to(self.device)
 
         phi_pred_BC = self(grid_mesh_eval_xyz_BC)
-        grad_phi_BC = torch.autograd.grad(outputs=phi_pred_BC, inputs=grid_mesh_eval_xyz_BC,
-                                         grad_outputs=torch.ones_like(phi_pred_BC),
-                                         create_graph=True)[0]
+        grad_phi_BC = torch.autograd.grad(
+            outputs=phi_pred_BC,
+            inputs=grid_mesh_eval_xyz_BC,
+            grad_outputs=torch.ones_like(phi_pred_BC),
+            create_graph=True,
+        )[0]
 
         B_pred_BC = (-1 * grad_phi_BC).cpu().detach().numpy()
         labels = ['B$_{x}$', 'B$_{y}$', "B$_{z}$"]
@@ -878,14 +901,16 @@ class PINN(nn.Module):
         Bz_surf = B_pred_0[..., 2].reshape(num_pts, num_pts)
         Btotal_surf = np.sqrt(Bx_surf**2 + By_surf**2 + Bz_surf**2)
 
-        plot_four_component_mollweide(Phi, Theta,
-                                      Bx_surf, By_surf, Bz_surf, Btotal_surf,
-                                       output_file=f"{output_dir}/eval_surface_{epoch:d}.png",
-                                       cnorm='symlog',
-                                       figsize=(10, 10),
-                                       titles=None,
-                                       cbar_label="B field [nTesla]",
-                                       share_colorbar=False)
+        plot_four_component_mollweide(
+            Phi, Theta,
+            Bx_surf, By_surf, Bz_surf, Btotal_surf,
+            output_file=f"{output_dir}/eval_surface_{epoch:d}.png",
+            cnorm='symlog',
+            figsize=(10, 10),
+            titles=None,
+            cbar_label="B field [nTesla]",
+            share_colorbar=False,
+        )
 
         Bx_BC = B_pred_BC[..., 0].reshape(num_pts, num_pts)
         By_BC = B_pred_BC[..., 1].reshape(num_pts, num_pts)

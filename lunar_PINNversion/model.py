@@ -18,7 +18,12 @@ from dataloader.util import spherical_to_cartesian
 R_lunar = 1737e3 # m
 
 class PositionalEncoding(nn.Module):
-    def __init__(self, in_dim=3, num_frequencies=4, base_freq = 0.98):
+    def __init__(
+        self,
+        in_dim=3,
+        num_frequencies=4,
+        base_freq=0.98,
+    ):
         super().__init__()
         self.in_dim = in_dim
         self.num_frequencies = num_frequencies
@@ -99,10 +104,14 @@ class SirenNet(nn.Module):
         return self.net(x)
 
 class PINN(nn.Module):
-
-    def __init__(self, hidden_dim=128,
-                 num_hidden_layers=5,
-                 w0=35.0, w0_initial=40.0, device=None):
+    def __init__(
+        self,
+        hidden_dim=128,
+        num_hidden_layers=5,
+        w0=35.0,
+        w0_initial=40.0,
+        device=None,
+    ):
         super().__init__()
         #
         # self.pe = PositionalEncoding(in_dim=3, num_frequencies=pe_num_freqs,
@@ -797,6 +806,7 @@ class PINN(nn.Module):
             best_loss=best_loss,
             is_best=False
         )
+        
     def evaluate_model(self, epoch, lunar_data, output_dir):
         # Predict the potential and field after training
         self.plot_B_eval(epoch, lunar_data, output_dir)

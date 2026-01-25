@@ -4,9 +4,9 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 import matplotlib.pyplot as pl
-from lunar_PINNversion.model import PINN
-from lunar_PINNversion.dataloader.dataLoader import Lunar_data_loader, Lunar_surface_data_loader
-from lunar_PINNversion.dataloader.util import spherical_to_cartesian
+from model import PINN
+from dataloader.dataLoader import Lunar_data_loader, Lunar_surface_data_loader
+from dataloader.util import spherical_to_cartesian
 # import wandb
 
 
@@ -167,5 +167,5 @@ pinn.train_pinn_with_surface_data(
     batch_size=batch_size,
     checkpoint_every=1000,  # Save checkpoint every N epochs
     resume_from=None,  # Path to checkpoint to resume from
-    output_dir="./real_data_with_surface_data_v2_lr-3/",
+    output_dir="./real_data_with_surface_data_v2_lr-3",
 )

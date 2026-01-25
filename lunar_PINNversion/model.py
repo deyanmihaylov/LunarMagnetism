@@ -806,7 +806,7 @@ class PINN(nn.Module):
             best_loss=best_loss,
             is_best=False
         )
-        
+
     def evaluate_model(self, epoch, lunar_data, output_dir):
         # Predict the potential and field after training
         self.plot_B_eval(epoch, lunar_data, output_dir)
@@ -963,3 +963,7 @@ def evaluate_from_checkpoint():
         # Your evaluation code here
         # model.plot_B_eval(checkpoint['epoch'], lunar_data, './results')
         pass
+
+
+if __name__ == "__main__":
+    pass

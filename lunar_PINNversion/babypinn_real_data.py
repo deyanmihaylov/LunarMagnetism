@@ -124,5 +124,5 @@ pinn.train_pinn(
     batch_size=65536,
     checkpoint_every=1000,  # Save checkpoint every N epochs
     resume_from=None,  # Path to checkpoint to resume from
-    output_dir = "./babypinn_real_data_output",
+    output_dir="./babypinn_real_data_output",
 )

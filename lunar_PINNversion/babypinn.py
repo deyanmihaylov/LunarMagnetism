@@ -330,11 +330,22 @@ domain[:, -1] = domain[:, -1] * z_loc
 boundary_points = torch.tensor(np.random.rand(1000, 3), dtype=torch.float32).to(device)
 boundary_points[:, -1] = z_loc  # Points on the face z = constant
 
-B_measured = true_B(boundary_points[:, 0],
-                    boundary_points[:, 1],
-                    boundary_points[:, 2])
+B_measured = true_B(
+    boundary_points[:, 0],
+    boundary_points[:, 1],
+    boundary_points[:, 2],
+)
 
-train_pinn(pinn, domain, boundary_points, B_measured,
-           epochs=100000, lr=5e-3,
-           lambda_bc=1.0, lambda_domain=1, period_eval=4000,
-           step_size=1000, gamma=.98)
+train_pinn(
+    pinn,
+    domain,
+    boundary_points,
+    B_measured,
+    epochs=100000,
+    lr=5e-3,
+    lambda_bc=1.0,
+    lambda_domain=1,
+    period_eval=4000,
+    step_size=1000,
+    gamma=.98,
+)

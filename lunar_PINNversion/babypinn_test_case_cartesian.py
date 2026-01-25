@@ -4,9 +4,9 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 import matplotlib.pyplot as pl
-from lunar_PINNversion.model import PINN
-from lunar_PINNversion.dataloader.dataLoader import Lunar_data_loader, Lunar_surface_data_loader
-from lunar_PINNversion.dataloader.util import spherical_to_cartesian
+from model import PINN
+from dataloader.dataLoader import Lunar_data_loader, Lunar_surface_data_loader
+from dataloader.util import spherical_to_cartesian
 import wandb
 
 if torch.cuda.is_available():
@@ -17,19 +17,28 @@ else:
     print("Using CPU")
 
 
-domain_xyz = np.array([spherical_to_cartesian(el[0] / (R_lunar), el[1], el[2]) for
-                       el in domain])
-domain_xyz = torch.tensor(domain_xyz, dtype=torch.float32).to(device)
+# domain_xyz = np.array([
+#     spherical_to_cartesian(el[0] / (R_lunar), el[1], el[2])
+#     for el in domain
+# ])
+# domain_xyz = torch.tensor(domain_xyz, dtype=torch.float32).to(device)
 
-boundary_points_full = np.stack((Lunar_data_loader1.x_coord,
-                                        Lunar_data_loader1.y_coord,
-                                        Lunar_data_loader1.z_coord), axis=-1) / (R_lunar)
+boundary_points_full = np.stack((
+    Lunar_data_loader1.x_coord,
+    Lunar_data_loader1.y_coord,
+    Lunar_data_loader1.z_coord,
+), axis=-1) / (R_lunar)
 
-boundary_points_full = torch.tensor(boundary_points_full, dtype=torch.float32).to(device)
+boundary_points_full = torch.tensor(
+    boundary_points_full,
+    dtype=torch.float32,
+).to(device)
 
-B_measured_full = np.stack((Lunar_data_loader1.b_x,
-                             Lunar_data_loader1.b_y,
-                             Lunar_data_loader1.b_z), axis=-1)
+B_measured_full = np.stack((
+    Lunar_data_loader1.b_x,
+    Lunar_data_loader1.b_y,
+    Lunar_data_loader1.b_z,
+), axis=-1)
 B_measured_full = torch.tensor(B_measured_full, dtype=torch.float32).to(device)
 
 print(f"Boundary points shape: {boundary_points_full.shape}")
@@ -70,12 +79,16 @@ inner_loader = DataLoader(inner_dataset, batch_size=4096, shuffle=True)
 pinn = PINN(pe_num_freqs=6, base_freq = 1.4, device=device)
 pinn = pinn.to(device)
 
-pinn.train_pinn(inner_loader, boundary_loader,
-                Lunar_data_loader1,
-                epochs=10000,
-                lambda_bc=1.0, lambda_domain=1.,
-                boundary_points_full = boundary_points_full,
-                B_measured_full = B_measured_full,
-                initial_lr=1e-3, target_lr=1e-6,
-                output_dir = "/home/memolnar/Projects/lunarmagnetism/Outputs/real_data/surface_only_v1/")
+pinn.train_pinn(
+    inner_loader,
+    boundary_loader,
+    Lunar_data_loader1,
+    epochs=10000,
+    lambda_bc=1.0,
+    lambda_domain=1.,
+    boundary_points_full=boundary_points_full,
+    B_measured_full=B_measured_full,
+    initial_lr=1e-3,
+    target_lr=1e-6,
+    output_dir="./surface_only_v1/")
 wandb.finish()

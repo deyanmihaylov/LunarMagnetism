@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from torch.optim.lr_scheduler import ExponentialLR
 from evaluation.mollweide_plot import plot_mollweide_map
-from lunar_PINNversion.dataloader.dataLoader import Lunar_data_loader, Lunar_surface_data_loader
-from lunar_PINNversion.dataloader.util import spherical_to_cartesian
+from dataloader.dataLoader import Lunar_data_loader, Lunar_surface_data_loader
+from dataloader.util import spherical_to_cartesian
 from torch.utils.data import DataLoader, TensorDataset
 
 
@@ -22,11 +22,11 @@ else:
     print("Using CPU")
 
 
-data_filename = '/home/memolnar/Projects/lunarmagnetism/data/Moon_Mag_100km.txt'
-surface_data_filename = '/home/memolnar/Projects/lunarmagnetism/data/surface_measurements.txt'
+data_filename = './data/Moon_Mag_100km.txt'
+surface_data_filename = './data/surface_measurements.txt'
 
 Lunar_data_loader1 = Lunar_data_loader(filename=data_filename)
-# Lunar_surface_data_loader1 = Lunar_surface_data_loader(filename=surface_data_filename)
+Lunar_surface_data_loader1 = Lunar_surface_data_loader(filename=surface_data_filename)
 
 # Random points inside the domain [0, 1]^3
 

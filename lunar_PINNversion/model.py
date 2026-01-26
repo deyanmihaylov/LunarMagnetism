@@ -44,6 +44,7 @@ class PositionalEncoding(nn.Module):
     def out_dim(self):
         return self.in_dim * (1 + 2 * self.num_frequencies)
 
+
 class SineLayer(nn.Module):
     def __init__(self, in_features, out_features, w0=30.0, is_first=False):
         super().__init__()
@@ -64,6 +65,7 @@ class SineLayer(nn.Module):
 
     def forward(self, x):
         return torch.sin(self.w0 * self.linear(x))
+
 
 class SirenNet(nn.Module):
     def __init__(
@@ -102,6 +104,7 @@ class SirenNet(nn.Module):
 
     def forward(self, x):
         return self.net(x)
+
 
 class PINN(nn.Module):
     def __init__(
@@ -155,12 +158,14 @@ class PINN(nn.Module):
         domain[:, 1] = domain[:, 1] * np.pi
         domain[:, 2] = domain[:, 2] * 2 * np.pi - np.pi
 
-        domain_xyz = np.array([spherical_to_cartesian(el[0] / R_lunar, el[1], el[2])
-                               for el in domain])
+        domain_xyz = np.array([
+            spherical_to_cartesian(el[0] / R_lunar, el[1], el[2])
+            for el in domain
+        ])
+
         return torch.tensor(domain_xyz, dtype=torch.float32).to(self.device)
 
     # Compute the Laplacian using automatic differentiation
-
     def compute_laplacian(self, xyz):
         xyz = xyz.requires_grad_(True)
         phi = self(xyz)
@@ -182,13 +187,16 @@ class PINN(nn.Module):
 
     def compute_total_B_field_loss(self, inputs, B_measured_magntitude):
         phi = self(inputs.requires_grad_(True))
-        grad_phi = torch.autograd.grad(outputs=phi, inputs=inputs,
-                                       grad_outputs=torch.ones_like(phi),
-                                       create_graph=True)[0]
+        grad_phi = torch.autograd.grad(
+            outputs=phi,
+            inputs=inputs,
+            grad_outputs=torch.ones_like(phi),
+            create_graph=True,
+        )[0]
         B_pred = -1 * grad_phi
-        B_pred_magnitude = torch.sqrt(B_pred[...,0]**2
-                                      +B_pred[...,1]**2
-                                      +B_pred[...,2]**2)
+        B_pred_magnitude = torch.sqrt(
+            B_pred[...,0]**2 + B_pred[...,1]**2 + B_pred[...,2]**2
+        )
 
         return torch.mean((B_measured_magntitude - B_pred_magnitude)**2)
 
@@ -452,27 +460,27 @@ class PINN(nn.Module):
         )
 
         def train_pinn(
-                self,
-                inner_loader,
-                boundary_loader,
-                lunar_data,
-                epochs,
-                lambda_domain=1.0,
-                lambda_bc=100.0,
-                period_eval=100,
-                checkpoint_every=500,  # Save checkpoint every N epochs
-                boundary_points_full=None,
-                B_measured_full=None,
-                n_boundary_samples=60000,
-                n_colloc_samples=10,
-                resample_boundary_every=10,
-                resample_colloc_every=5,
-                initial_lr=1e-3,
-                target_lr=1e-6,
-                use_amp=False,  # Enable mixed precision
-                output_dir="",
-                resume_from=None,  # Path to checkpoint to resume from
-                batch_size=8096,
+            self,
+            inner_loader,
+            boundary_loader,
+            lunar_data,
+            epochs,
+            lambda_domain=1.0,
+            lambda_bc=100.0,
+            period_eval=100,
+            checkpoint_every=500,  # Save checkpoint every N epochs
+            boundary_points_full=None,
+            B_measured_full=None,
+            n_boundary_samples=60000,
+            n_colloc_samples=10,
+            resample_boundary_every=10,
+            resample_colloc_every=5,
+            initial_lr=1e-3,
+            target_lr=1e-6,
+            use_amp=False,  # Enable mixed precision
+            output_dir="",
+            resume_from=None,  # Path to checkpoint to resume from
+            batch_size=8096,
         ):
             start_epoch = 0
             best_loss = float('inf')
@@ -613,28 +621,28 @@ class PINN(nn.Module):
             )
 
     def train_pinn_with_surface_data(
-            self,
-            inner_loader,
-            boundary_loader,
-            surface_loader,
-            lunar_data,
-            epochs,
-            lambda_domain=1.0,
-            lambda_bc=100.0,
-            period_eval=100,
-            checkpoint_every=500,  # Save checkpoint every N epochs
-            boundary_points_full=None,
-            B_measured_full=None,
-            n_boundary_samples=60000,
-            n_colloc_samples = 10,
-            resample_boundary_every=10,
-            resample_colloc_every=5,
-            initial_lr=1e-3,
-            target_lr=1e-6,
-            use_amp=False,  # Enable mixed precision
-            output_dir="",
-            resume_from=None,  # Path to checkpoint to resume from
-            batch_size = 8096,
+        self,
+        inner_loader,
+        boundary_loader,
+        surface_loader,
+        lunar_data,
+        epochs,
+        lambda_domain=1.0,
+        lambda_bc=100.0,
+        period_eval=100,
+        checkpoint_every=500,  # Save checkpoint every N epochs
+        boundary_points_full=None,
+        B_measured_full=None,
+        n_boundary_samples=60000,
+        n_colloc_samples = 10,
+        resample_boundary_every=10,
+        resample_colloc_every=5,
+        initial_lr=1e-3,
+        target_lr=1e-6,
+        use_amp=False,  # Enable mixed precision
+        output_dir="",
+        resume_from=None,  # Path to checkpoint to resume from
+        batch_size=8096,
     ):
         start_epoch = 0
         best_loss = float('inf')
@@ -882,30 +890,33 @@ class PINN(nn.Module):
         Bx_BC = B_pred_BC[..., 0].reshape(num_pts, num_pts)
         By_BC = B_pred_BC[..., 1].reshape(num_pts, num_pts)
         Bz_BC = B_pred_BC[..., 2].reshape(num_pts, num_pts)
-        Btot_BC  = np.sqrt(Bx_BC ** 2 + By_BC ** 2 + Bz_BC ** 2)
-        plot_four_component_mollweide(Phi, Theta,
-                                      Bx_BC, By_BC, Bz_BC, Btot_BC,
-                                       output_file=f"{output_dir}/eval_BC_{epoch:d}.png",
-                                       cnorm='symlog',
-                                       figsize=(10, 10),
-                                       titles=None,
-                                       cbar_label="B field [nTesla]",
-                                       share_colorbar=False)
+        Btot_BC = np.sqrt(Bx_BC ** 2 + By_BC ** 2 + Bz_BC ** 2)
+        plot_four_component_mollweide(
+            Phi, Theta,
+            Bx_BC, By_BC, Bz_BC, Btot_BC,
+            output_file=f"{output_dir}/eval_BC_{epoch:d}.png",
+            cnorm='symlog',
+            figsize=(10, 10),
+            titles=None,
+            cbar_label="B field [nTesla]",
+            share_colorbar=False,
+        )
 
         if epoch == 0:
-            plot_four_component_mollweide(lunar_data.phi[::2],
-                                       lunar_data.theta[::2],
-                                       lunar_data.b_x[::2],
-                                       lunar_data.b_y[::2],
-                                       lunar_data.b_z[::2],
-                                       np.sqrt(lunar_data.b_z[::2]**2 + lunar_data.b_x[::2]**2 +lunar_data.b_y[::2]**2),
-                                       output_file=f"{output_dir}/true_BC_{epoch:d}.png",
-                                       cnorm='symlog',
-                                       figsize=(10, 10),
-                                       titles=None,
-                                       cbar_label="B field [nTesla]",
-                                       share_colorbar=False)
-
+            plot_four_component_mollweide(
+                lunar_data.phi[::2],
+                lunar_data.theta[::2],
+                lunar_data.b_x[::2],
+                lunar_data.b_y[::2],
+                lunar_data.b_z[::2],
+                np.sqrt(lunar_data.b_z[::2]**2 + lunar_data.b_x[::2]**2 + lunar_data.b_y[::2]**2),
+                output_file=f"{output_dir}/true_BC_{epoch:d}.png",
+                cnorm='symlog',
+                figsize=(10, 10),
+                titles=None,
+                cbar_label="B field [nTesla]",
+                share_colorbar=False,
+            )
 
 # Example usage functions
 def train_new_model():
@@ -928,13 +939,15 @@ def train_new_model():
         resume_from=None  # Start from scratch
     )
 
-
 def resume_training():
     """Example: Resume training from checkpoint"""
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Load model from checkpoint
-    model, _ = PINN.load_checkpoint('./checkpoints/checkpoint_latest.pt', device=device)
+    model, _ = PINN.load_checkpoint(
+        './checkpoints/checkpoint_latest.pt',
+        device=device,
+    )
 
     # Continue training
     model.train_pinn(
@@ -947,13 +960,15 @@ def resume_training():
         resume_from='./checkpoints/checkpoint_latest.pt'  # Resume from here
     )
 
-
 def evaluate_from_checkpoint():
     """Example: Load model and evaluate without training"""
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Load best model
-    model, checkpoint = PINN.load_checkpoint('./checkpoints/checkpoint_best.pt', device=device)
+    model, checkpoint = PINN.load_checkpoint(
+        './checkpoints/checkpoint_best.pt',
+        device=device,
+    )
 
     # Put in eval mode
     model.eval()

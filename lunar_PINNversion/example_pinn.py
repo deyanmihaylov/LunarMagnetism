@@ -3,6 +3,7 @@ import copy
 import torch.nn as nn
 import numpy as np
 import os
+from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from torch.optim.lr_scheduler import ExponentialLR
@@ -17,13 +18,13 @@ else:
 
 
 def true_phi_np(x, y, z):
-    return np.cos(kx*x) * np.sin(ky*y) * np.exp(-kz*z)
+    return np.cos(kx * x) * np.sin(ky * y) * np.exp(-kz * z)
 
 def true_phi_torch(xyz):
-    x = xyz[:,0:1]
-    y = xyz[:,1:2]
-    z = xyz[:,2:3]
-    return (torch.cos(kx*x) * torch.sin(ky*y) * torch.exp(-kz*z))
+    x = xyz[:, 0:1]
+    y = xyz[:, 1:2]
+    z = xyz[:, 2:3]
+    return (torch.cos(kx * x) * torch.sin(ky * y) * torch.exp(-kz * z))
 
 def true_H_torch(xyz):
     xyz.requires_grad_(True)
@@ -34,7 +35,7 @@ def true_H_torch(xyz):
     H = -grad
     return H
 
-# Evaluate PINN solution on z=0 and z=1
+# Evaluate PINN solution on z = 0 and z = 1
 def evaluate_phi(
     model_cpu,
     z_value,
@@ -255,7 +256,10 @@ def compute_H_from_phi(phi_fn, xyz):
 # -------------------------
 # Laplacian
 # -------------------------
-def laplacian_phi(model, xyz):
+def laplacian_phi(
+    model,
+    xyz,
+):
     xyz.requires_grad_(True)
     phi = model(xyz)
 
@@ -310,7 +314,7 @@ class PINN(nn.Module):
     def __init__(
         self,
         pe_num_freqs=6,
-        base_freq = 1.3,
+        base_freq=1.3,
         layers=[64,128,128,128],
     ):
         super().__init__()
@@ -338,244 +342,209 @@ class PINN(nn.Module):
         # return self.net(xyz)
 
 
+if __name__ == "__main__":
+    resume_training = False
 
+    # True potential parameters
+    kx = 12
+    ky = 12
+    kz = np.sqrt(kx**2 + ky**2)
 
+    # Visualize magnetic field components at a specific height z = 0.5
+    model = PINN(pe_num_freqs=6, base_freq=1.4)
 
+    # Training data
+    N_f = 100000
+    xyz_f = torch.rand(N_f, 3)  # N_f (0, 1)^3 collocation points
+    # xyz_f[:, 2] = 1
+    
+    # Boundary points on z=0
+    bc_height1 = 0.25
+    bc_height2 = 0.40
 
-resume_training = False
+    os.makedirs(f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}")
 
-# -------------------------
-# True potential parameters
-# -------------------------
-kx = 12
-ky = 12
-kz = np.sqrt(kx**2 + ky**2)
+    N_b1 = 4000
+    x1 = torch.rand(N_b1, 1)
+    y1 = torch.rand(N_b1, 1)
+    z1 = torch.zeros_like(x1) + bc_height1
+    xyz_b1 = torch.cat([x1, y1, z1], dim=1)
 
+    # Boundary points on z=0
+    N_b2 = 4000
+    x2 = torch.rand(N_b2, 1)
+    y2 = torch.rand(N_b2, 1)
+    z2 = torch.zeros_like(x2) + bc_height2
+    xyz_b2 = torch.cat([x2, y2, z2], dim=1)
 
+    # True magnetic field on bc
+    H_true_b1 = true_H_torch(xyz_b1).detach()
+    H_true_b2 = true_H_torch(xyz_b2).detach()
 
+    # Move training data to GPU
+    xyz_f = xyz_f.to(device)
 
+    xyz_b1 = xyz_b1.to(device)
+    xyz_b2 = xyz_b2.to(device)
+    H_true_b1 = H_true_b1.to(device)
+    H_true_b2 = H_true_b2.to(device)
 
+    # -------------------------
+    # Training
+    # -------------------------
 
-
-# -------------------------
-# PINN Model
-# -------------------------
-
-
-
-
-
-
-
-
-
-
-
-# Visualize magnetic field components at a specific height z=0.5
-
-model = PINN(pe_num_freqs =6, base_freq = 1.4,)
-
-
-
-
-# -------------------------
-# Training data
-# -------------------------
-N_f = 100000
-xyz_f = torch.rand(N_f,3)  # (0,1)^3 collocation points
-# xyz_f[:, 2] = 1
-
-# Boundary points on z=0
-bc_height1 = 0.25
-bc_height2 = 0.40
-
-os.makedirs(f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}")
-
-N_b1 = 4000
-x1 = torch.rand(N_b1,1)
-y1 = torch.rand(N_b1,1)
-z1 = torch.zeros_like(x1) + bc_height1
-xyz_b1 = torch.cat([x1,y1,z1], dim=1)
-
-# Boundary points on z=0
-N_b2 = 4000
-x2 = torch.rand(N_b2,1)
-y2 = torch.rand(N_b2,1)
-z2 = torch.zeros_like(x2) + bc_height2
-xyz_b2 = torch.cat([x2,y2,z2], dim=1)
-
-# True magnetic field on bc
-H_true_b1 = true_H_torch(xyz_b1).detach()
-H_true_b2 = true_H_torch(xyz_b2).detach()
-
-# Move model to GPU
-
-
-# Move training data to GPU
-xyz_f = xyz_f.to(device)
-
-xyz_b1 = xyz_b1.to(device)
-xyz_b2 = xyz_b2.to(device)
-H_true_b1 = H_true_b1.to(device)
-H_true_b2 = H_true_b2.to(device)
-
-# -------------------------
-# Training
-# -------------------------
-
-n_iterations = 60010
-target_lr = 1e-5
-initial_lr = 3e-3
-gamma = (target_lr / initial_lr) ** (1 / n_iterations)  # Decay factor per iteration
-
-
-if resume_training:  # If you're resuming training
-    # Load the model from a checkpoint
-    n_iterations = 2000000
-    target_lr = 1e-7
-    initial_lr = 1e-6
+    n_iterations = 60010
+    target_lr = 1e-5
+    initial_lr = 3e-3
     gamma = (target_lr / initial_lr) ** (1 / n_iterations)  # Decay factor per iteration
 
-    checkpoint = torch.load(
-        "trained_model_checkpoint.pth",
-        map_location=device,
-    )
+    if resume_training:  # If you're resuming training
+        # Load the model from a checkpoint
+        n_iterations = 2000000
+        target_lr = 1e-7
+        initial_lr = 1e-6
+        gamma = (target_lr / initial_lr) ** (1 / n_iterations)  # Decay factor per iteration
 
-    # Recreate the model, optimizer, and scheduler
-    model = PINN().to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=initial_lr)
-    scheduler = ExponentialLR(optimizer, gamma=gamma)
-
-    # Load checkpoint data
-    model.load_state_dict(checkpoint['model_state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    # scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-    start_iteration = checkpoint['iteration']
-
-    print(f"Resuming training from iteration {start_iteration}")
-else:
-    # Train model from scratch
-    model = PINN().to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=initial_lr)
-    scheduler = ExponentialLR(optimizer, gamma=gamma)
-    start_iteration = 0
-
-for it in range(start_iteration, n_iterations):
-    optimizer.zero_grad()
-
-    # PDE loss
-    lap = laplacian_phi(model, xyz_f)
-    loss_pde = torch.mean(lap**2)
-
-    # Boundary loss: match H = -∇Φ on z=0
-    xyz_b1.requires_grad_(True)
-    phi_b1 = model(xyz_b1)
-    grad_b1 = torch.autograd.grad(
-        phi_b1, xyz_b1, torch.ones_like(phi_b1), create_graph=True,
-    )[0]
-    H_pred_b1 = -grad_b1
-    loss_bc1 = torch.mean((H_pred_b1 - H_true_b1)**2) / (torch.mean(torch.abs(H_true_b1)) + 1e-6)
-
-    # Boundary loss: match H = -∇Φ on z=0
-    xyz_b2.requires_grad_(True)
-    phi_b2 = model(xyz_b2)
-    grad_b2 = torch.autograd.grad(phi_b2, xyz_b2, torch.ones_like(phi_b2), create_graph=True)[0]
-    H_pred_b2 = -grad_b2
-    loss_bc2 = torch.mean((H_pred_b2 - H_true_b2)**2) / (torch.mean(torch.abs(H_true_b2)) + 1e-6)
-
-    loss = loss_pde + loss_bc1 + loss_bc2
-    loss.backward()
-    optimizer.step()
-    scheduler.step()
-
-    optimizer.zero_grad()
-    if it % 500 == 0:
-        current_lr = optimizer.param_groups[0]["lr"]
-        print(
-            f"iter {it}, loss = {loss.item():.4e}, PDE={loss_pde.item():.4e}, ",
-            f"BC1={loss_bc1.item():.4e}, BC2={loss_bc2.item():.4e}, ",
-            f"LR={current_lr:.1e}",
+        checkpoint = torch.load(
+            "trained_model_checkpoint.pth",
+            map_location=device,
         )
 
-    # Save a checkpoint every 5000 iterations
-    if it > 0 and it % 5000 == 0:
-        torch.save({
-            'model_state_dict': model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'scheduler_state_dict': scheduler.state_dict(),
-            'iteration': it,
-        }, "trained_model_checkpoint.pth")
-        print(f"Checkpoint saved at iteration {it}.")
+        # Recreate the model, optimizer, and scheduler
+        model = PINN().to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=initial_lr)
+        scheduler = ExponentialLR(optimizer, gamma=gamma)
 
-        # Create a new instance of the same model
-        model_cpu = copy.deepcopy(model)  # Deep copy the model structure
-        model_cpu = model_cpu.to('cpu')  # Move the new copy to the CPU
+        # Load checkpoint data
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        # scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        start_iteration = checkpoint['iteration']
 
-        # Copy the state_dict (weights and biases)
-        model_cpu.load_state_dict(model.state_dict())
+        print(f"Resuming training from iteration {start_iteration}")
+    else:
+        # Train model from scratch
+        model = PINN().to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=initial_lr)
+        scheduler = ExponentialLR(optimizer, gamma=gamma)
+        start_iteration = 0
 
-        # At this point:
-        # - model is on the GPU
-        # - model_cpu is a replica of model, but on the CPU
-        # Make grid
-        N = 80
-        x = np.linspace(0, 1, N)
-        y = np.linspace(0, 1, N)
-        X, Y = np.meshgrid(x, y)
+    for it in range(start_iteration, n_iterations):
+        optimizer.zero_grad()
 
-        phi_pred_0, phi_true_0 = evaluate_phi(model_cpu, 0.0)
-        phi_pred_1, phi_true_1 = evaluate_phi(model_cpu, 0.5)
+        # PDE loss
+        lap = laplacian_phi(model, xyz_f)
+        loss_pde = torch.mean(lap**2)
 
-        heights = np.linspace(0, 1, num=11)
-        for el in heights:
-            plot_magnetic_field_comparison(
-                model=model_cpu,
-                X=X,
-                Y=Y,
-                z_value=el,
-                N=80,
-                save_as=f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}/B_comp_z_{el:.2f}_it_{it}.png"  # Set to None if you don't want to save
+        # Boundary loss: match H = -∇Φ on z=0
+        xyz_b1.requires_grad_(True)
+        phi_b1 = model(xyz_b1)
+        grad_b1 = torch.autograd.grad(
+            phi_b1, xyz_b1, torch.ones_like(phi_b1), create_graph=True,
+        )[0]
+        H_pred_b1 = -grad_b1
+        loss_bc1 = torch.mean((H_pred_b1 - H_true_b1)**2) / (torch.mean(torch.abs(H_true_b1)) + 1e-6)
+
+        # Boundary loss: match H = -∇Φ on z=0
+        xyz_b2.requires_grad_(True)
+        phi_b2 = model(xyz_b2)
+        grad_b2 = torch.autograd.grad(phi_b2, xyz_b2, torch.ones_like(phi_b2), create_graph=True)[0]
+        H_pred_b2 = -grad_b2
+        loss_bc2 = torch.mean((H_pred_b2 - H_true_b2)**2) / (torch.mean(torch.abs(H_true_b2)) + 1e-6)
+
+        loss = loss_pde + loss_bc1 + loss_bc2
+        loss.backward()
+        optimizer.step()
+        scheduler.step()
+
+        optimizer.zero_grad()
+        if it % 500 == 0:
+            current_lr = optimizer.param_groups[0]["lr"]
+            print(
+                f"iter {it}, loss = {loss.item():.4e}, PDE={loss_pde.item():.4e}, ",
+                f"BC1={loss_bc1.item():.4e}, BC2={loss_bc2.item():.4e}, ",
+                f"LR={current_lr:.1e}",
             )
 
-print("Training complete.")
+        # Save a checkpoint every 5000 iterations
+        if it > 0 and it % 5000 == 0:
+            torch.save({
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'scheduler_state_dict': scheduler.state_dict(),
+                'iteration': it,
+            }, f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}/trained_model_checkpoint.pth")
+            print(f"Checkpoint saved at iteration {it}.")
 
-# Move the trained model to CPU
-model_cpu = model.to("cpu")
-print("Model has been moved back to CPU.")
+            # Create a new instance of the same model
+            model_cpu = copy.deepcopy(model)  # Deep copy the model structure
+            model_cpu = model_cpu.to('cpu')  # Move the new copy to the CPU
 
-torch.save(model_cpu.state_dict(), "trained_model.pth")
-print("Model saved to trained_model.pth")
+            # Copy the state_dict (weights and biases)
+            model_cpu.load_state_dict(model.state_dict())
 
-phi_pred_0, phi_true_0 = evaluate_phi(model_cpu, 0.0)
-phi_pred_1, phi_true_1 = evaluate_phi(model_cpu, 0.5)
+            # At this point:
+            # - model is on the GPU
+            # - model_cpu is a replica of model, but on the CPU
+            # Make grid
+            N = 80
+            x = np.linspace(0, 1, N)
+            y = np.linspace(0, 1, N)
+            X, Y = np.meshgrid(x, y)
 
-# ---------------------------------------
-# Plot 4 panels
-# ---------------------------------------
-plt.figure(figsize=(14,10))
+            phi_pred_0, phi_true_0 = evaluate_phi(model_cpu, 0.0)
+            phi_pred_1, phi_true_1 = evaluate_phi(model_cpu, 0.5)
 
-# --- Bottom face z=0 ---
-plt.subplot(2,2,1)
-plt.title("PINN  Φ(x,y,0)")
-plt.pcolormesh(X, Y, phi_pred_0, shading='auto')
-plt.colorbar()
+            heights = np.linspace(0, 1, num=11)
+            for el in heights:
+                plot_magnetic_field_comparison(
+                    model=model_cpu,
+                    X=X,
+                    Y=Y,
+                    z_value=el,
+                    N=80,
+                    save_as=f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}/B_comp_z_{el:.2f}_it_{it}.png"  # Set to None if you don't want to save
+                )
 
-plt.subplot(2,2,2)
-plt.title("True  Φ(x,y,0)")
-plt.pcolormesh(X, Y, phi_true_0, shading='auto')
-plt.colorbar()
+    print("Training complete.")
 
-# --- Top face z=1 ---
-plt.subplot(2,2,3)
-plt.title("PINN  Φ(x,y,0.5)")
-plt.pcolormesh(X, Y, phi_pred_1, shading='auto')
-plt.colorbar()
+    # Move the trained model to CPU
+    model_cpu = model.to("cpu")
+    print("Model has been moved back to CPU.")
 
-plt.subplot(2,2,4)
-plt.title("True  Φ(x,y,0.5)")
-plt.pcolormesh(X, Y, phi_true_1, shading='auto')
-plt.colorbar()
+    torch.save(model_cpu.state_dict(), "trained_model.pth")
+    print("Model saved to trained_model.pth")
 
-plt.tight_layout()
-plt.savefig(f"./outputs/Toy_model_2height_{bc_height1}_{bc_height2}/example_new.png")
-plt.show()
+    phi_pred_0, phi_true_0 = evaluate_phi(model_cpu, 0.0)
+    phi_pred_1, phi_true_1 = evaluate_phi(model_cpu, 0.5)
+
+    # ---------------------------------------
+    # Plot 4 panels
+    # ---------------------------------------
+    plt.figure(figsize=(14,10))
+
+    # --- Bottom face z=0 ---
+    plt.subplot(2,2,1)
+    plt.title("PINN  Φ(x,y,0)")
+    plt.pcolormesh(X, Y, phi_pred_0, shading='auto')
+    plt.colorbar()
+
+    plt.subplot(2,2,2)
+    plt.title("True  Φ(x,y,0)")
+    plt.pcolormesh(X, Y, phi_true_0, shading='auto')
+    plt.colorbar()
+
+    # --- Top face z=1 ---
+    plt.subplot(2,2,3)
+    plt.title("PINN  Φ(x,y,0.5)")
+    plt.pcolormesh(X, Y, phi_pred_1, shading='auto')
+    plt.colorbar()
+
+    plt.subplot(2,2,4)
+    plt.title("True  Φ(x,y,0.5)")
+    plt.pcolormesh(X, Y, phi_true_1, shading='auto')
+    plt.colorbar()
+
+    plt.tight_layout()
+    plt.savefig(f"./outputs/Toy_model_2height_{bc_height1}_{bc_height2}/example_new.png")
+    plt.show()

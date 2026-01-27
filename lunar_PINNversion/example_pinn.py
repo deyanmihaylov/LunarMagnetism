@@ -4,11 +4,9 @@ import torch.nn as nn
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
-from torch.optim.lr_scheduler import ExponentialLR    
+from torch.optim.lr_scheduler import ExponentialLR
 
 if torch.cuda.is_available():
-    torch.cuda.init()         # or torch.cuda.set_device(0)
-    _ = torch.empty(1, device="cuda")  # cheap warmup
     device = torch.device("cuda")  # Select GPU
     print(f"Using GPU: {torch.cuda.get_device_name(0)}")
 else:
@@ -240,9 +238,12 @@ def compute_H_from_phi(phi_fn, xyz):
     phi = phi_fn(xyz)
 
     # Compute gradients of the potential
-    grad = torch.autograd.grad(outputs=phi, inputs=xyz,
-                               grad_outputs=torch.ones_like(phi),
-                               create_graph=True)[0]
+    grad = torch.autograd.grad(
+        outputs=phi,
+        inputs=xyz,
+        grad_outputs=torch.ones_like(phi),
+        create_graph=True,
+    )[0]
 
     # Magnetic field H = -∇Φ
     H = -grad  # Negative gradient of scalar potential
@@ -385,6 +386,8 @@ xyz_f = torch.rand(N_f,3)  # (0,1)^3 collocation points
 # Boundary points on z=0
 bc_height1 = 0.25
 bc_height2 = 0.40
+
+os.makedirs(f"./outputs/Toy_model_2height_{bc_height1}_{bc_height2}")
 
 N_b1 = 4000
 x1 = torch.rand(N_b1,1)
@@ -529,7 +532,7 @@ for it in range(start_iteration, n_iterations):
                 Y=Y,
                 z_value=el,
                 N=80,
-                save_as=f"../Outputs/Toy_model_2height_{bc_height1}_{bc_height2}/B_comp_z_{el}_it_{it}.png"  # Set to None if you don't want to save
+                save_as=f"./outputs/Toy_model_2height_{bc_height1}_{bc_height2}/B_comp_z_{el}_it_{it}.png"  # Set to None if you don't want to save
             )
 
 print("Training complete.")
@@ -572,5 +575,5 @@ plt.pcolormesh(X, Y, phi_true_1, shading='auto')
 plt.colorbar()
 
 plt.tight_layout()
-plt.savefig('../Outputs/example_new.png')
+plt.savefig(f"./outputs/Toy_model_2height_{bc_height1}_{bc_height2}/example_new.png")
 plt.show()

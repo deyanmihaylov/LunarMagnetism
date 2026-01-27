@@ -6,6 +6,7 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from torch.optim.lr_scheduler import ExponentialLR
+import wandb
 
 if torch.cuda.is_available():
     device = torch.device("cuda")  # Select GPU
@@ -388,7 +389,7 @@ xyz_f = torch.rand(N_f,3)  # (0,1)^3 collocation points
 bc_height1 = 0.25
 bc_height2 = 0.40
 
-os.makedirs(f"./outputs/Toy_model_2height_{bc_height1:.1f}_{bc_height2}")
+os.makedirs(f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}")
 
 N_b1 = 4000
 x1 = torch.rand(N_b1,1)
@@ -533,7 +534,7 @@ for it in range(start_iteration, n_iterations):
                 Y=Y,
                 z_value=el,
                 N=80,
-                save_as=f"./outputs/Toy_model_2height_{bc_height1}_{bc_height2}/B_comp_z_{el}_it_{it}.png"  # Set to None if you don't want to save
+                save_as=f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}/B_comp_z_{el:.2f}_it_{it}.png"  # Set to None if you don't want to save
             )
 
 print("Training complete.")

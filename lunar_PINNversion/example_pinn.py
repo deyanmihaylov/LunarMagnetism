@@ -141,76 +141,103 @@ def plot_magnetic_field_comparison(
     # First row: True magnetic field components
     plt.subplot(3, 3, 1)
     plt.title("True Hx (z={})".format(z_value))
-    plt.pcolormesh(X, Y, Hx_true_grid,
-                   shading='auto', cmap=cmap_figs,
-                   vmin=np.nanquantile(Hx_true_grid, 0.02),
-                   vmax=np.nanquantile(Hx_true_grid, 0.98))
+    plt.pcolormesh(
+        X, Y, Hx_true_grid,
+        shading='auto', cmap=cmap_figs,
+        vmin=np.nanquantile(Hx_true_grid, 0.02),
+        vmax=np.nanquantile(Hx_true_grid, 0.98),
+    )
     plt.colorbar()
 
     plt.subplot(3, 3, 2)
     plt.title("True Hy (z={})".format(z_value))
-    plt.pcolormesh(X, Y, Hy_true_grid,
-                   shading='auto', cmap=cmap_figs,
-                   vmin=np.nanquantile(Hy_true_grid, 0.02),
-                   vmax=np.nanquantile(Hy_true_grid, 0.98))
+    plt.pcolormesh(
+        X, Y, Hy_true_grid,
+        shading='auto', cmap=cmap_figs,
+        vmin=np.nanquantile(Hy_true_grid, 0.02),
+        vmax=np.nanquantile(Hy_true_grid, 0.98),
+    )
     plt.colorbar()
 
     plt.subplot(3, 3, 3)
     plt.title("True Hz (z={})".format(z_value))
-    plt.pcolormesh(X, Y, Hz_true_grid,
-                   shading='auto', cmap=cmap_figs,
-                   vmin=np.nanquantile(Hz_true_grid, 0.02),
-                   vmax=np.nanquantile(Hz_true_grid, 0.98))
+    plt.pcolormesh(
+        X, Y, Hz_true_grid,
+        shading='auto', cmap=cmap_figs,
+        vmin=np.nanquantile(Hz_true_grid, 0.02),
+        vmax=np.nanquantile(Hz_true_grid, 0.98),
+    )
     plt.colorbar()
 
     # Second row: PINN-predicted magnetic field components
     plt.subplot(3, 3, 4)
     plt.title("PINN Hx (z={})".format(z_value))
-    plt.pcolormesh(X, Y, Hx_pred_grid,
-                   shading='auto', cmap=cmap_figs,
-                   vmin=np.nanquantile(Hx_pred_grid, 0.02),
-                   vmax=np.nanquantile(Hx_pred_grid, 0.98))
+    plt.pcolormesh(
+        X, Y, Hx_pred_grid,
+        shading='auto', cmap=cmap_figs,
+        vmin=np.nanquantile(Hx_pred_grid, 0.02),
+        vmax=np.nanquantile(Hx_pred_grid, 0.98),
+    )
     plt.colorbar()
 
     plt.subplot(3, 3, 5)
     plt.title("PINN Hy (z={})".format(z_value))
-    plt.pcolormesh(X, Y, Hy_pred_grid,
-                   shading='auto', cmap=cmap_figs,
-                   vmin=np.nanquantile(Hy_pred_grid, 0.02),
-                   vmax=np.nanquantile(Hy_pred_grid, 0.98))
+    plt.pcolormesh(
+        X, Y, Hy_pred_grid,
+        shading='auto', cmap=cmap_figs,
+        vmin=np.nanquantile(Hy_pred_grid, 0.02),
+        vmax=np.nanquantile(Hy_pred_grid, 0.98),
+    )
     plt.colorbar()
 
     plt.subplot(3, 3, 6)
     plt.title("PINN Hz (z={})".format(z_value))
-    plt.pcolormesh(X, Y, Hz_pred_grid,
-                   shading='auto', cmap=cmap_figs,
-                   vmin=np.nanquantile(Hz_pred_grid, 0.02),
-                   vmax=np.nanquantile(Hz_pred_grid, 0.98))
+    plt.pcolormesh(
+        X, Y, Hz_pred_grid,
+        shading='auto', cmap=cmap_figs,
+        vmin=np.nanquantile(Hz_pred_grid, 0.02),
+        vmax=np.nanquantile(Hz_pred_grid, 0.98),
+    )
     plt.colorbar()
 
     # Third row: Difference between true and PINN-predicted magnetic field components
     plt.subplot(3, 3, 7)
     plt.title("Difference Hx (z={})".format(z_value))
-    plt.pcolormesh(X, Y, Hx_diff_grid / np.abs(Hx_true_grid),
-                   shading='auto', cmap=cmap_figs,
-                   norm=colors.SymLogNorm(linthresh=0.1, linscale=0.2,
-                                          vmin=-3, vmax=3, base=10))
+    plt.pcolormesh(
+        X, Y, Hx_diff_grid / np.abs(Hx_true_grid),
+        shading='auto', cmap=cmap_figs,
+        norm=colors.SymLogNorm(
+            linthresh=0.1, linscale=0.2,
+            vmin=-3, vmax=3,
+            base=10,
+        ),
+    )
     plt.colorbar()
 
     plt.subplot(3, 3, 8)
     plt.title("Difference Hy (z={})".format(z_value))
-    plt.pcolormesh(X, Y, Hy_diff_grid / np.abs(Hy_true_grid),
-                   shading='auto', cmap=cmap_figs,
-                   norm=colors.SymLogNorm(linthresh=0.1, linscale=0.2,
-                                          vmin=-3, vmax=3, base=10))
+    plt.pcolormesh(
+        X, Y, Hy_diff_grid / np.abs(Hy_true_grid),
+        shading='auto', cmap=cmap_figs,
+        norm=colors.SymLogNorm(
+            linthresh=0.1, linscale=0.2,
+            vmin=-3, vmax=3,
+            base=10,
+        ),
+    )
     plt.colorbar()
 
     plt.subplot(3, 3, 9)
     plt.title("Difference Hz (z={})".format(z_value))
-    plt.pcolormesh(X, Y, Hz_diff_grid / np.abs(Hz_true_grid),
-                   shading='auto', cmap=cmap_figs,
-                   norm=colors.SymLogNorm(linthresh=0.1, linscale=0.2,
-                                          vmin=-3, vmax=3, base=10))
+    plt.pcolormesh(
+        X, Y, Hz_diff_grid / np.abs(Hz_true_grid),
+        shading='auto', cmap=cmap_figs,
+        norm=colors.SymLogNorm(
+            linthresh=0.1, linscale=0.2,
+            vmin=-3, vmax=3,
+            base=10,
+        ),
+    )
     plt.colorbar()
 
     plt.tight_layout()

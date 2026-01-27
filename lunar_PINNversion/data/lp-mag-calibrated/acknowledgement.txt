@@ -1,0 +1,18 @@
+When using delivered data please acknowledge the data provider and 
+PDS in accordance with the PDS citation policy. Full details can be 
+found at:
+
+http://search-pdsppi.igpp.ucla.edu/citations_policy.jsp
+
+
+	Author : Acuna, Mario
+	Publication Year: 2024
+	Description : 
+                This collection  contains Lunar Prospector Magnetometer Calibrated data provided as 
+                ASCII tables of 1 day duration in Selenocentric Solar Ecliptic (SSE) and 
+                Selenographic (SEL) coordinates for 1998-01-16 to 1999-07-29. 
+            
+	doi : https://doi.org/10.17189/aa6m-k379
+
+Thank you.
+

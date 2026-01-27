@@ -1,0 +1,5 @@
+Retrieved from PDS-PPI IGPP UCLA on 2026-01-22T04:39:13Z
+
+You can download this data again with the URL:
+
+/ditdos/download?id=LP-L-ER-4-ELECTRON-DATA-V1.0:ER_220EV_199810:199810.TAB

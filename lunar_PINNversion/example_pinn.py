@@ -370,6 +370,8 @@ class PINN(nn.Module):
 
 
 if __name__ == "__main__":
+    wandb.init(project="Lunar-magnetism")
+
     resume_training = False
 
     # True potential parameters
@@ -501,6 +503,15 @@ if __name__ == "__main__":
                 'scheduler_state_dict': scheduler.state_dict(),
                 'iteration': it,
             }, f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}/trained_model_checkpoint.pth")
+
+            artifact = wandb.Artifact(
+                name=f"checkpoint_{it}",
+                type="checkpoint",
+                description=f"Checkpoint after iteration {it}"
+            )
+            artifact.add_file(f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}/trained_model_checkpoint.pth")
+            wandb.log_artifact(artifact)
+            
             print(f"Checkpoint saved at iteration {it}.")
 
             # Create a new instance of the same model
@@ -533,21 +544,34 @@ if __name__ == "__main__":
                     save_as=f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}/B_comp_z_{el:.2f}_it_{it}.png"  # Set to None if you don't want to save
                 )
 
+                wandb.log({
+                    "input_image": wandb.Image(
+                        f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}/B_comp_z_{el:.2f}_it_{it}.png",
+                        caption=f"Magnetic field comparison at height {el:.2f}",
+                    )
+                })
+
     print("Training complete.")
 
     # Move the trained model to CPU
     model_cpu = model.to("cpu")
     print("Model has been moved back to CPU.")
 
-    torch.save(model_cpu.state_dict(), "trained_model.pth")
+    torch.save(model_cpu.state_dict(), f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}/trained_model.pth")
     print("Model saved to trained_model.pth")
+
+    artifact = wandb.Artifact(
+        name=f"trained_model",
+        type="checkpoint",
+        description=f"Trained model state"
+    )
+    artifact.add_file(f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}/trained_model.pth")
+    wandb.log_artifact(artifact)
 
     phi_pred_0, phi_true_0 = evaluate_phi(model_cpu, 0.0)
     phi_pred_1, phi_true_1 = evaluate_phi(model_cpu, 0.5)
 
-    # ---------------------------------------
     # Plot 4 panels
-    # ---------------------------------------
     plt.figure(figsize=(14,10))
 
     # --- Bottom face z=0 ---
@@ -575,3 +599,11 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.savefig(f"./outputs/Toy_model_2height_{bc_height1}_{bc_height2}/example_new.png")
     plt.show()
+
+    wandb.log({
+        "input_image": wandb.Image(
+            f"./outputs/Toy_model_2height_{bc_height1}_{bc_height2}/example_new.png",
+            caption=f"Comparison between true and predicted magnetic field",
+        )
+    })
+

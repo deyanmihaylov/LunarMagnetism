@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1K00.sch" 
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/msn/v1/PDS4_MSN_1K00_1300.sch" 
+   schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<Product_Observational
+   xmlns="http://pds.nasa.gov/pds4/pds/v1"
+   xmlns:msn="http://pds.nasa.gov/pds4/msn/v1"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="
+      http://pds.nasa.gov/pds4/pds/v1
+      https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1K00.xsd
+
+      http://pds.nasa.gov/pds4/msn/v1
+      https://pds.nasa.gov/pds4/msn/v1/PDS4_MSN_1K00_1300.xsd
+     ">
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:lp-mag-calibrated:data-lunarcrds:ma980326</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Lunar Prospector MAG data in SSE and SEL coordinates for 1998-03-26</title>
+        <information_model_version>1.20.0.0</information_model_version>
+        <product_class>Product_Observational</product_class>
+        <Citation_Information>
+            <author_list>Acuna, Mario</author_list>
+            <publication_year>2024</publication_year>
+            <description>
+                This file contains Lunar Prospector Magnetometer Calibrated data provided as 
+                ASCII tables of 1 day duration in Selenocentric Solar Ecliptic (SSE) and 
+                Selenographic (SEL) coordinates for 1998-03-26. 
+            </description>
+        </Citation_Information>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>2025-03-19</modification_date>
+                <version_id>1.0</version_id>
+                <description>
+                    This product, MA980326.TAB, was originally released as part
+                    of the PDS3 LP-L-MAG-4-SUMM-LUNARCRDS-5SEC-V1.0 data set. The metadata
+                    have been migrated to PDS4. The data themselves are unchanged.
+                </description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>
+    <Observation_Area>
+        <Time_Coordinates>
+            <start_date_time>1998-03-26T00:00:02.5Z</start_date_time>
+            <stop_date_time>1998-03-26T23:59:57.5Z</stop_date_time>
+        </Time_Coordinates>
+        <Primary_Result_Summary>
+            <purpose>Science</purpose>
+            <processing_level>Calibrated</processing_level>
+            <description>Lunar Prospector MAG data</description>
+            <Science_Facets>
+                <discipline_name>Fields</discipline_name>
+                <facet1>Magnetic</facet1>
+                <facet2>Background</facet2>
+            </Science_Facets>
+        </Primary_Result_Summary>
+        <Investigation_Area>
+            <name>Lunar Prospector</name>
+            <type>Mission</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:investigation:mission.lunar_prospector</lid_reference>
+                <reference_type>data_to_investigation</reference_type>
+            </Internal_Reference>  
+        </Investigation_Area>
+        <Observing_System>
+            <Observing_System_Component>
+                <name>Lunar Prospector</name>
+                <type>Host</type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument_host:spacecraft.lp</lid_reference>
+                    <reference_type>is_instrument_host</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+            <Observing_System_Component>
+                <name>Magnetometer</name>
+                <type>Instrument</type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument:lp.mag</lid_reference>
+                    <reference_type>is_instrument</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+        </Observing_System>
+        <Target_Identification>
+            <name>Moon</name>
+            <type>Satellite</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:target:satellite.earth.moon</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+        <Discipline_Area>
+            <msn:Mission_Information>
+                <msn:mission_phase_name>Primary Mission</msn:mission_phase_name>
+            </msn:Mission_Information>  
+        </Discipline_Area>
+    </Observation_Area>
+    <Reference_List>
+        <Internal_Reference>
+            <lidvid_reference>urn:nasa:pds:lp-mager-derived:data-moon-pos:moon_pos::1.0</lidvid_reference>
+            <reference_type>data_to_ancillary_data</reference_type>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lidvid_reference>urn:nasa:pds:lp-mager-derived:data-spacecraft-pos:pos98_03::1.0</lidvid_reference>
+            <reference_type>data_to_ancillary_data</reference_type>
+        </Internal_Reference>
+        <External_Reference>
+            <reference_text>
+                Binder, A.B., Feldman, W.C., Konopliv, A.S., Lin, R.P., Acuna, M.H.,       
+                Hood, L.L., and Guinness, E.A., LP MOON SPACECRAFT ATTITUDE V1.0,          
+                LP-L-ENG-6-ATTITUDE-V1.0, NASA Planetary Data System, 1998.
+            </reference_text>
+            <description>
+                The Lunar Prospector Attitude data set consists of monthly values for the          
+                spacecraft spin rate and spin axis orientation (attitude) as a function    
+                of time located in the respective ATTITUDE.TAB.
+            </description>
+        </External_Reference>        
+        <External_Reference>
+            <reference_text>                
+                Binder, A.B., Feldman, W.C., Konopliv, A.S., Lin, R.P., Acuna, M.H.,       
+                Hood, L.L. and Guinness, E.A., LP MOON UPLINK COMMAND V1.0,                
+                LP-L-ENG-6-COMMAND-V1.0, NASA Planetary Data System, 1998.
+            </reference_text>
+            <description>
+                The Lunar Prospector Command data set contains commands sent to the spacecraft through one of the 
+                Deep Space Network ground stations located in:
+                C9807266.TAB
+            </description>
+        </External_Reference>
+        <External_Reference>
+            <reference_text>
+                Binder, A.B., W.C. Feldman, A.S. Konopliv, R.P. Lin, M.H. Acuna,           
+                L.L. Hood, and E.A. Guinness, LP MOON SPACECRAFT EPHEMERIS V1.0,           
+                LP-L-6-EPHEMERIS-V1.0, NASA Planetary Data System, 1998. 
+            </reference_text>
+            <description>
+                The Lunar Prospector Ephemeris data set consists of spacecraft position    
+                and velocity determinations as a function of time in Moon-centered, Earth  
+                equator, mean of J2000 coordinates located in:
+                E980326.DAT
+            </description>
+        </External_Reference>
+        <External_Reference>
+            <reference_text>
+                Binder, A.B., Feldman, W.C., Konopliv, A.S., Lin, R.P., Acuna, M.H.,   
+                Hood, L.L. and Guinness, E.A., LP MOON SUN PULSE DATA V1.0,            
+                LP-L-ENG-6-SUNPULSE-V1.0, NASA Planetary Data System, 1998.
+            </reference_text>
+            <description>
+                The sun pulse data set is a record of times that the Lunar Prospector sun  
+                sensor detects the Sun located in:
+                S9808422.B, S9808502.B, S9808506.B, S9808510.B, S9808516.B, S9808520.B
+            </description>
+        </External_Reference>
+        <Source_Product_External>
+            <external_source_product_identifier>LP-L-MAG-4-SUMM-LUNARCRDS-5SEC-V1.0:MA980326:MA980326.TAB</external_source_product_identifier>
+            <reference_type>data_to_calibrated_source_product</reference_type>
+            <doi>10.17189/1519724</doi>
+            <curating_facility>PDS Planetary Plasma Interactions Node</curating_facility>
+            <description>
+                This is the first version converted to PDS4. The DOI references the source PDS3 data set.  
+            </description>
+        </Source_Product_External>
+    </Reference_List>   
+    <File_Area_Observational>
+        <File>
+            <file_name>MA980326.TAB</file_name>
+            <creation_date_time>2002-05-31T10:02:14</creation_date_time>
+            <file_size unit="byte">2597787</file_size>
+            <md5_checksum>4dc84ca08d63295cdea9765adf03afaf</md5_checksum>
+        </File>
+        <Table_Character>
+            <name>Lunar Prospector MAG data in SSE and SEL coordinates for 1998-03-26</name>
+            <offset unit="byte">0</offset>
+            <records>16979</records>
+            <description>
+                The SSE coordinate system has its X-axis along the Moon-Sun line,                             
+                positive towards the Sun. The Z-axis is parallel to the northward 
+                normal to the Earth's ecliptic plane, and Y completes the right-handed 
+                set. The SEL coordinate system used here is a Cartesian representation 
+                that places the Z-axis along the rotation axis of the Moon, positive in 
+                the direction of angular momentum. The X-axis lies in the lunar equatorial 
+                plane at 0 degrees longitude, and Y completes the right-handed set.
+            </description>
+            <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+            <Record_Character>
+                <fields>16</fields>
+                <groups>0</groups>
+                <record_length unit="byte">153</record_length>
+                <Field_Character>
+                      <name>Time</name>
+                      <field_number>1</field_number>
+                      <field_location unit="byte">1</field_location>
+                      <data_type>ASCII_Date_Time_YMD</data_type> 
+                      <field_length unit="byte">21</field_length>
+                      <description>
+                          This column contains spacecraft event time (SCET) of the center of        
+                          the 5 second averaging window.  Averages are non-overlapping.             
+                          The time format is the PDS time format:  yyyy-mm-ddThh:mm:ss.s.           
+                      </description>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>Decimal Day</name>
+                      <field_number>2</field_number>
+                      <field_location unit="byte">24</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">10</field_length>
+                      <unit>Day</unit>                       
+                      <description>
+                          This column contains the decimal day corresponding to the                 
+                          spacecraft event time (SCET) of the center of the 5 second                
+                          averaging window. Day 1 corresponds to Jan. 1.  Averages                  
+                          are non-overlapping.
+                      </description>  
+                      <Special_Constants>
+                          <missing_constant>999.999999</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>Bx_SEL</name>
+                      <field_number>3</field_number>
+                      <field_location unit="byte">35</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">8</field_length>
+                      <unit>nT</unit> 
+                      <description>
+                          X magnetic field component in the SEL coordinate system.         
+                      </description>
+                      <Special_Constants>
+                          <missing_constant>999.999</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>By_SEL</name>
+                      <field_number>4</field_number>
+                      <field_location unit="byte">44</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">7</field_length>
+                      <unit>nT</unit> 
+                      <description>
+                          Y magnetic field component in the SEL coordinate system.     
+                      </description>
+                      <Special_Constants>
+                          <missing_constant>999.999</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>Bz_SEL</name>
+                      <field_number>5</field_number>
+                      <field_location unit="byte">52</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">7</field_length>
+                      <unit>nT</unit> 
+                      <description>
+                          Z magnetic field component in the SEL coordinate system.         
+                      </description>
+                      <Special_Constants>
+                          <missing_constant>999.999</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>Bx_SSE</name>
+                      <field_number>6</field_number>
+                      <field_location unit="byte">60</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">8</field_length>
+                      <unit>nT</unit> 
+                      <description>
+                          X magnetic field component in the SSE coordinate system.          
+                      </description>
+                      <Special_Constants>
+                          <missing_constant>999.999</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>By_SSE</name>
+                      <field_number>7</field_number>
+                      <field_location unit="byte">69</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">7</field_length>
+                      <unit>nT</unit> 
+                      <description>
+                          Y magnetic field component in the SSE coordinate system.            
+                      </description>
+                      <Special_Constants>
+                          <missing_constant>999.999</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>Bz_SSE</name>
+                      <field_number>8</field_number>
+                      <field_location unit="byte">77</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">7</field_length>
+                      <unit>nT</unit> 
+                      <description>
+                          Z magnetic field component in the SSE coordinate system.        
+                      </description>                                                                                                              
+                      <Special_Constants>
+                          <missing_constant>999.999</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>B_RMS</name>
+                      <field_number>9</field_number>
+                      <field_location unit="byte">86</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">7</field_length>
+                      <unit>nT</unit> 
+                      <description>
+                          RMS deviation of the field                 
+                          magnitude.  Provides an indication of field variability                   
+                          for the 5 second window.          
+                      </description>
+                      <Special_Constants>
+                          <missing_constant>999.999</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>X_SEL</name>
+                      <field_number>10</field_number>
+                      <field_location unit="byte">94</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">9</field_length>
+                      <unit>km</unit>                                                                   
+                      <description>
+                          Spacecraft X coordinate in the SEL coordinate system.         
+                      </description>  
+                      <Special_Constants>
+                          <missing_constant>999999.99</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>Y_SEL</name>
+                      <field_number>11</field_number>
+                      <field_location unit="byte">104</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">8</field_length>
+                      <unit>km</unit>                                                                   
+                      <description>
+                          Spacecraft Y coordinate in the SEL coordinate system.          
+                      </description>
+                      <Special_Constants>
+                          <missing_constant>999999.99</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>Z_SEL</name>
+                      <field_number>12</field_number>
+                      <field_location unit="byte">113</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">8</field_length>
+                      <unit>km</unit>                                                                   
+                      <description>
+                          Spacecraft Z coordinate in the SEL coordinate system.         
+                      </description>
+                      <Special_Constants>
+                          <missing_constant>999999.99</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>X_SSE</name>
+                      <field_number>13</field_number>
+                      <field_location unit="byte">122</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">9</field_length>
+                      <unit>km</unit>                                                                   
+                      <description>
+                          Spacecraft X coordinate in the SSE coordinate system.         
+                      </description>
+                      <Special_Constants>
+                          <missing_constant>999999.99</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>Y_SSE</name>
+                      <field_number>14</field_number>
+                      <field_location unit="byte">132</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">8</field_length>
+                      <unit>km</unit>                                                                   
+                      <description>
+                          Spacecraft Y coordinate in the SSE coordinate system.      
+                      </description>
+                      <Special_Constants>
+                          <missing_constant>999999.99</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>Z_SSE</name>
+                      <field_number>15</field_number>
+                      <field_location unit="byte">141</field_location>
+                      <data_type>ASCII_Real</data_type> 
+                      <field_length unit="byte">8</field_length>
+                      <unit>km</unit>                                                                   
+                      <description>
+                          Spacecraft Z coordinate in the SSE coordinate system.          
+                      </description>
+                      <Special_Constants>
+                          <missing_constant>999999.99</missing_constant>
+                      </Special_Constants>
+                </Field_Character>                       
+                <Field_Character>
+                      <name>ISUN</name>
+                      <field_number>16</field_number>
+                      <field_location unit="byte">151</field_location>
+                      <data_type>ASCII_Integer</data_type> 
+                      <field_length unit="byte">1</field_length>
+                      <description>
+                          A parameter from the sunpulse file         
+                          indicating whether the spacecraft is in the sun (0) or in                 
+                          eclipse (1).  A value of 2 indicates that the sunpulse file               
+                          was not available and the data were processed using the less              
+                          accurate determination of sunpulse time in the Level 0 data               
+                          file.  There may be some errors in this column, with values               
+                          offset 1 and 0 interchanged.       
+                      </description>                                                                                                              
+                </Field_Character>                       
+            </Record_Character>
+        </Table_Character>
+    </File_Area_Observational>
+</Product_Observational>

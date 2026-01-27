@@ -1,0 +1,119 @@
+PDS_VERSION_ID                  = PDS3                                        
+DATA_SET_ID                     = "LP-L-ER-4-ELECTRON-DATA-V1.0"              
+PRODUCT_ID                      = "ER_220EV_199810"                           
+PRODUCT_TYPE                    = "DATA"                                      
+PRODUCT_VERSION_ID              = "V1.0-01"                                   
+PRODUCT_CREATION_TIME           = 2003-09-02                                  
+                                                                              
+RECORD_TYPE                     = FIXED_LENGTH                                
+RECORD_BYTES                    = 112                                         
+FILE_RECORDS                    = 509                                         
+                                                                              
+START_TIME                      = 1998-10-05T09:20:49                         
+STOP_TIME                       = 1998-10-07T08:05:30                         
+SPACECRAFT_CLOCK_START_COUNT    = "UNK"                                       
+SPACECRAFT_CLOCK_STOP_COUNT     = "UNK"                                       
+                                                                              
+INSTRUMENT_HOST_NAME            = "LUNAR PROSPECTOR"                          
+INSTRUMENT_HOST_ID              = "LP"                                        
+MISSION_PHASE_NAME              = "PRIMARY MISSION"                           
+TARGET_NAME                     = "MOON"                                      
+INSTRUMENT_NAME                 = "ELECTRON REFLECTOMETER"                              
+INSTRUMENT_ID                   = "ER"                                       
+NOTE                            = "                                           
+Lunar Prospector Level 2 Electron Reflectometer data."                        
+                                                                              
+DESCRIPTION                     = "                                           
+Lunar Prospector Electron Reflectometer (ER) Level 2 data."                   
+                                                                              
+^TABLE                          = "199810.TAB"                                
+OBJECT                          = TABLE                                       
+  INTERCHANGE_FORMAT            = ASCII                                       
+  ROWS                          = 509                                         
+  COLUMNS                       = 8                                           
+  ROW_BYTES                     = 112                                         
+  OBJECT                        = COLUMN                                      
+    NAME                        = "TIME"                                      
+    COLUMN_NUMBER               = 1                                           
+    UNIT                        = "N/A"                                       
+    DATA_TYPE                   = CHARACTER                                   
+    START_BYTE                  = 1                                           
+    BYTES                       = 19                                          
+    DESCRIPTION                 = "                                           
+Universal date and time for the record, in the format                         
+yyyy-mm-dd/hh:mm:ss"                                                          
+  END_OBJECT                    = COLUMN                                      
+  OBJECT                        = COLUMN                                      
+    NAME                        = "LONGITUDE"                                 
+    COLUMN_NUMBER               = 2                                           
+    UNIT                        = "DEGREE"                                    
+    DATA_TYPE                   = ASCII_REAL                                  
+    START_BYTE                  = 21                                          
+    BYTES                       = 12                                          
+    DESCRIPTION                 = "                                           
+Selenographic (body-fixed) longitude of the ER measurement footprint"         
+  END_OBJECT                    = COLUMN                                      
+  OBJECT                        = COLUMN                                      
+    NAME                        = "LATITUDE"                                  
+    COLUMN_NUMBER               = 3                                           
+    UNIT                        = "DEGREE"                                    
+    DATA_TYPE                   = ASCII_REAL                                  
+    START_BYTE                  = 34                                          
+    BYTES                       = 12                                          
+    DESCRIPTION                 = "                                           
+Selenographic (body-fixed) latitude of the ER measurement footprint"          
+  END_OBJECT                    = COLUMN                                      
+  OBJECT                        = COLUMN                                      
+    NAME                        = "B_SC"                                      
+    COLUMN_NUMBER               = 4                                           
+    UNIT                        = "NANOTESLA"                                 
+    DATA_TYPE                   = ASCII_REAL                                  
+    START_BYTE                  = 47                                          
+    BYTES                       = 12                                          
+    DESCRIPTION                 = "                                           
+Average magnetic field amplitude at the spacecraft"                           
+  END_OBJECT                    = COLUMN                                      
+  OBJECT                        = COLUMN                                      
+    NAME                        = "A"                                         
+    COLUMN_NUMBER               = 5                                           
+    UNIT                        = "DEGREE"                                    
+    DATA_TYPE                   = ASCII_REAL                                  
+    START_BYTE                  = 60                                          
+    BYTES                       = 12                                          
+    DESCRIPTION                 = "                                           
+Cutoff pitch angle for electrons reflected from the lunar surface at          
+the energy channel of the file"                                               
+  END_OBJECT                    = COLUMN                                      
+  OBJECT                        = COLUMN                                      
+    NAME                        = "DELTA_A"                                   
+    COLUMN_NUMBER               = 6                                           
+    UNIT                        = "DEGREE"                                    
+    DATA_TYPE                   = ASCII_REAL                                  
+    START_BYTE                  = 73                                          
+    BYTES                       = 12                                          
+    DESCRIPTION                 = "                                           
+Uncertainty in the cutoff pitch angle of electrons reflected from the         
+lunar surface at the energy channel of the file"                              
+  END_OBJECT                    = COLUMN                                      
+  OBJECT                        = COLUMN                                      
+    NAME                        = "R"                                         
+    COLUMN_NUMBER               = 7                                           
+    UNIT                        = "N/A"                                       
+    DATA_TYPE                   = ASCII_REAL                                  
+    START_BYTE                  = 86                                          
+    BYTES                       = 12                                          
+    DESCRIPTION                 = "                                           
+Effective electron reflection coefficient"                                    
+  END_OBJECT                    = COLUMN                                      
+  OBJECT                        = COLUMN                                      
+    NAME                        = "DELTA_R"                                   
+    COLUMN_NUMBER               = 8                                           
+    UNIT                        = "N/A"                                       
+    DATA_TYPE                   = ASCII_REAL                                  
+    START_BYTE                  = 99                                          
+    BYTES                       = 12                                          
+    DESCRIPTION                 = "                                           
+Uncertainty in the effective electron reflection coefficient"                 
+  END_OBJECT                    = COLUMN                                      
+END_OBJECT                      = TABLE                                       
+END                                                                           

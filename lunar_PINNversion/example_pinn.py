@@ -388,7 +388,7 @@ xyz_f = torch.rand(N_f,3)  # (0,1)^3 collocation points
 bc_height1 = 0.25
 bc_height2 = 0.40
 
-os.makedirs(f"./outputs/Toy_model_2height_{bc_height1}_{bc_height2}")
+os.makedirs(f"./outputs/Toy_model_2height_{bc_height1:.1f}_{bc_height2}")
 
 N_b1 = 4000
 x1 = torch.rand(N_b1,1)

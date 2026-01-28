@@ -221,7 +221,7 @@ def train_pinn(
     period_eval=5000,
     step_size=1000,
     gamma=0.95,
-    output_dir=output_dir,
+    output_dir='.',
 ):
     optimizer = optim.Adam(model.parameters(), lr=lr)
     scheduler = optim.lr_scheduler.StepLR(
@@ -401,3 +401,5 @@ if __name__ == "__main__":
         gamma=.98,
         output_dir=output_dir,
     )
+
+    wandb.finish()

@@ -252,7 +252,7 @@ def train_pinn(
 def evaluate_model(
     model,
     epoch,
-    output_dir=output_dir,
+    output_dir='.',
 ):
     # Predict the potential and field after training
 

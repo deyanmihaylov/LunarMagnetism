@@ -12,6 +12,8 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 import matplotlib.pyplot as pl
+import wandb
+
 
 class PositionalEncoding(nn.Module):
     def __init__(self, num_freqs, d_input, max_freq=8):
@@ -170,17 +172,21 @@ def compute_laplacian(model, inputs):
     inputs = inputs.requires_grad_(True)
     phi = model(inputs)                 # shape (N, 1)
     # Sum second derivatives:
-    grads = torch.autograd.grad(outputs=phi, inputs=inputs,
-                                grad_outputs=torch.ones_like(phi),
-                                create_graph=True, retain_graph=True)[0]   # shape (N, 3)
+    grads = torch.autograd.grad(
+        outputs=phi, inputs=inputs,
+        grad_outputs=torch.ones_like(phi),
+        create_graph=True, retain_graph=True,
+    )[0] # shape (N, 3)
 
     # second derivatives for each input dim:
     d2 = []
     for i in range(inputs.shape[1]):
         grad_i = grads[:, i:i+1]   # shape (N,1)
-        d2_i = torch.autograd.grad(outputs=grad_i, inputs=inputs,
-                                   grad_outputs=torch.ones_like(grad_i),
-                                   create_graph=True, retain_graph=True)[0][:, i:i+1]  # shape (N,1)
+        d2_i = torch.autograd.grad(
+            outputs=grad_i, inputs=inputs,
+            grad_outputs=torch.ones_like(grad_i),
+            create_graph=True, retain_graph=True,
+        )[0][:, i:i+1] # shape (N,1)
         d2.append(d2_i)
 
     lap = d2[0] + d2[1] + d2[2]   # shape (N,1)
@@ -215,6 +221,7 @@ def train_pinn(
     period_eval=5000,
     step_size=1000,
     gamma=0.95,
+    output_dir=output_dir,
 ):
     optimizer = optim.Adam(model.parameters(), lr=lr)
     scheduler = optim.lr_scheduler.StepLR(
@@ -242,7 +249,11 @@ def train_pinn(
             evaluate_model(model, epoch)
         scheduler.step()  # Update the learning rate at the end of each epoch
 
-def evaluate_model(model, epoch):
+def evaluate_model(
+    model,
+    epoch,
+    output_dir=output_dir,
+):
     # Predict the potential and field after training
 
     kx = ky = 4
@@ -282,7 +293,15 @@ def evaluate_model(model, epoch):
     im1 = ax[2].imshow(deltaB_B, cmap='seismic', vmin=-0.1, vmax=0.1)
     pl.colorbar(im1, shrink=0.4)
     pl.tight_layout()
-    pl.savefig(f"./pred_{epoch}.png")
+    pl.savefig(f"{output_dir}/pred_{epoch}.png")
+
+    artifact = wandb.Artifact(
+        name=f"prediction_{epoch:d}",
+        type="plot",
+        description=f"Prediction at {epoch:d}",
+    )
+    artifact.add_file(f"{output_dir}/pred_{epoch:d}.png")
+    wandb.log_artifact(artifact)
     # pl.show()
     # pl.close()
 
@@ -308,44 +327,77 @@ def evaluate_model(model, epoch):
     im1 = ax[2].imshow(deltaB_B, cmap='seismic', vmin=-0.1, vmax=0.1)
     pl.colorbar(im1)
     pl.tight_layout()
-    pl.savefig(f"./eval_{epoch:d}.png")
+    pl.savefig(f"{output_dir}/eval_{epoch:d}.png")
+
+    artifact = wandb.Artifact(
+        name=f"evaluation_{epoch:d}",
+        type="plot",
+        description=f"Evaluation at {epoch:d}",
+    )
+    artifact.add_file(f"{output_dir}/eval_{epoch:d}.png")
+    wandb.log_artifact(artifact)
     # pl.show()
     # pl.close()
 
-# Training script configuration
-hidden_size = 128
-num_freqs = 6  # Number of frequencies for positional encoding
-max_freq = 1
-input_size = 3  # for (x, y, z) coordinates
-output_size = 1  # for the scalar magnetic potential
-z_loc = .5
 
-pinn = PINN(input_size, hidden_size, output_size, num_freqs, max_freq)
-pinn = pinn.to(device)
+if __name__ == "__main__":
+    output_dir = "./outputs/babyPINN/"
 
-domain = torch.tensor(np.random.rand(5000, 3), dtype=torch.float32).to(
-    device)  # Random points inside the domain [0, 1]^3
-domain[:, -1] = domain[:, -1] * z_loc
+    os.makedirs(output_dir)
 
-boundary_points = torch.tensor(np.random.rand(1000, 3), dtype=torch.float32).to(device)
-boundary_points[:, -1] = z_loc  # Points on the face z = constant
+    # Training script configuration
+    hidden_size = 128
+    num_freqs = 6  # Number of frequencies for positional encoding
+    max_freq = 1
+    input_size = 3  # for (x, y, z) coordinates
+    output_size = 1  # for the scalar magnetic potential
+    z_loc = 0.5
 
-B_measured = true_B(
-    boundary_points[:, 0],
-    boundary_points[:, 1],
-    boundary_points[:, 2],
-)
+    config_dict = {
+        "hidden_size": hidden_size,
+        "num_freqs": num_freqs,
+        "max_freq": max_freq,
+        "input_size": input_size,
+        "output_size": output_size,
+        "z_loc": z_loc,
+    }
 
-train_pinn(
-    pinn,
-    domain,
-    boundary_points,
-    B_measured,
-    epochs=100000,
-    lr=5e-3,
-    lambda_bc=1.0,
-    lambda_domain=1,
-    period_eval=4000,
-    step_size=1000,
-    gamma=.98,
-)
+    wandb.init(project="Lunar-magnetism", config=config_dict)
+
+    pinn = PINN(input_size, hidden_size, output_size, num_freqs, max_freq)
+    pinn = pinn.to(device)
+
+    # Random points inside the domain [0, 1]^3
+    domain = torch.tensor(
+        np.random.rand(5000, 3),
+        dtype=torch.float32,
+    ).to(device)  
+    domain[:, -1] = domain[:, -1] * z_loc
+
+    # Points on the face z = constant
+    boundary_points = torch.tensor(
+        np.random.rand(1000, 3),
+        dtype=torch.float32,
+    ).to(device)
+    boundary_points[:, -1] = z_loc
+
+    B_measured = true_B(
+        boundary_points[:, 0],
+        boundary_points[:, 1],
+        boundary_points[:, 2],
+    )
+
+    train_pinn(
+        pinn,
+        domain,
+        boundary_points,
+        B_measured,
+        epochs=100000,
+        lr=5e-3,
+        lambda_bc=1.0,
+        lambda_domain=1,
+        period_eval=4000,
+        step_size=1000,
+        gamma=.98,
+        output_dir=output_dir,
+    )

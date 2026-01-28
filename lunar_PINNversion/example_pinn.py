@@ -541,7 +541,7 @@ if __name__ == "__main__":
                     Y=Y,
                     z_value=el,
                     N=80,
-                    save_as=f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}/B_comp_z_{el:.2f}_it_{it}.png"  # Set to None if you don't want to save
+                    save_as=f"./outputs/Toy_model_2height_{bc_height1:.2f}_{bc_height2}/B_comp_z_{el:.2f}_it_{it}.png",
                 )
 
                 wandb.log({
@@ -608,4 +608,3 @@ if __name__ == "__main__":
     })
 
     wandb.finish()
-    

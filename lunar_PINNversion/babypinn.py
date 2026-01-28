@@ -267,9 +267,11 @@ def evaluate_model(
     # Example usage
 
     phi_pred = model(test_points)
-    grad_phi = torch.autograd.grad(outputs=phi_pred, inputs=test_points,
-                                   grad_outputs=torch.ones_like(phi_pred),
-                                   create_graph=False)[0]
+    grad_phi = torch.autograd.grad(
+        outputs=phi_pred, inputs=test_points,
+        grad_outputs=torch.ones_like(phi_pred),
+        create_graph=False,
+    )[0]
 
     B_pred = (-1 * grad_phi).cpu().detach().numpy()
 
@@ -296,13 +298,13 @@ def evaluate_model(
     pl.tight_layout()
     pl.savefig(f"{output_dir}/pred_{epoch}.png")
 
-    artifact = wandb.Artifact(
-        name=f"prediction_{epoch:d}",
-        type="plot",
-        description=f"Prediction at {epoch:d}",
-    )
-    artifact.add_file(f"{output_dir}/pred_{epoch:d}.png")
-    wandb.log_artifact(artifact)
+    wandb.log({
+        "input_image": wandb.Image(
+            f"{output_dir}/pred_{epoch:d}.png",
+            caption=f"Prediction at {epoch:d}",
+        )
+    })
+
     # pl.show()
     # pl.close()
 
@@ -330,13 +332,13 @@ def evaluate_model(
     pl.tight_layout()
     pl.savefig(f"{output_dir}/eval_{epoch:d}.png")
 
-    artifact = wandb.Artifact(
-        name=f"evaluation_{epoch:d}",
-        type="plot",
-        description=f"Evaluation at {epoch:d}",
-    )
-    artifact.add_file(f"{output_dir}/eval_{epoch:d}.png")
-    wandb.log_artifact(artifact)
+    wandb.log({
+        "input_image": wandb.Image(
+            f"{output_dir}/eval_{epoch:d}.png",
+            caption=f"Evaluation at {epoch:d}",
+        )
+    })
+
     # pl.show()
     # pl.close()
 

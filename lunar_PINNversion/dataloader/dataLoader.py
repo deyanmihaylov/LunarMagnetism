@@ -62,8 +62,11 @@ class Lunar_surface_data_loader(Generic_data_loader):
         self.transform_spherical_to_cartesian()
 
     def transform_spherical_to_cartesian(self):
-        self.x_coord, self.y_coord, self.z_coord = spherical_to_cartesian((np.ones_like(self.theta) * self.R_lunar),
-                                                                          self.theta, self.phi)
+        self.x_coord, self.y_coord, self.z_coord = spherical_to_cartesian(
+            (np.ones_like(self.theta) * self.R_lunar),
+            self.theta,
+            self.phi,
+        )
 
 class Lunar_surface_ER_data_loader(Lunar_surface_data_loader):
     def __init__(self, filename):
@@ -71,7 +74,6 @@ class Lunar_surface_ER_data_loader(Lunar_surface_data_loader):
         self.__read_LRO_data__()
         self.R_lunar = 1730e3
         self.transform_spherical_to_cartesian()
-
 
     def __read_LRO_data__(self):
         """

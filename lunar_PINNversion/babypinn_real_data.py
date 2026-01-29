@@ -53,15 +53,26 @@ if __name__ == "__main__":
     height_obs = 1e5 # height of observation
     batch_size = 8096
 
-    data_filename = './data/Moon_Mag_100km.txt'
-    surface_data_filename = './data/surface_measurements.txt'
+    data_filename = "./data/Moon_Mag_100km.txt"
+    surface_data_filename = "./data/surface_measurements.txt"
+
+    config_dict = {
+        "R_lunar": R_lunar,
+        "height_obs": height_obs,
+        "batch_size": batch_size,
+        "data_filename": data_filename,
+        "surface_data_filename": surface_data_filename,
+    }
+
+    wandb.init(
+        project="Lunar-magnetism",
+        config=config_dict,
+    )
 
     Lunar_data_loader1 = Lunar_data_loader(filename=data_filename)
     Lunar_surface_data_loader1 = Lunar_surface_data_loader(filename=surface_data_filename)
 
-
     # Random points inside the domain [0, 1]^3
-
     domain = np.random.rand(100000, 3) # Random points inside the domain [0, 1]^3
 
     domain[:, 0] = domain[:, 0] * 1e5 + R_lunar # r in kkm
@@ -89,17 +100,17 @@ if __name__ == "__main__":
         Lunar_data_loader1.b_y,
         Lunar_data_loader1.b_z,
     ), axis=-1)
-    B_measured_full = torch.tensor(B_measured_full, dtype=torch.float32).to(device)
+    B_measured_full = torch.tensor(
+        B_measured_full,
+        dtype=torch.float32,
+    ).to(device)
 
     print(f"Boundary points shape: {boundary_points_full.shape}")
     print(f"B measured shape: {B_measured_full.shape}")
 
-
     # Initial sampling
     boundary_dataset = TensorDataset(boundary_points_full, B_measured_full)
     boundary_loader = DataLoader(boundary_dataset, batch_size=batch_size, shuffle=True)
-
-
 
     n_colloc = 60000
     domain_xyz = generate_collocation_points(n_points=n_colloc)
@@ -129,7 +140,18 @@ if __name__ == "__main__":
         initial_lr=1e-3,
         target_lr=1e-6,
         batch_size=65536,
-        checkpoint_every=1000,  # Save checkpoint every N epochs
-        resume_from=None,  # Path to checkpoint to resume from
+        checkpoint_every=1000, # Save checkpoint every N epochs
+        resume_from=None, # Path to checkpoint to resume from
         output_dir="./outputs/babypinn_real_data",
     )
+
+    artifact = wandb.Artifact(
+        name="output_dir",
+        type="misc_files",
+    )
+
+    artifact.add_dir("./outputs/babypinn_real_data")
+
+    wandb.log_artifact(artifact)
+
+    wandb.finish()

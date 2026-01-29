@@ -1,4 +1,5 @@
 import torch
+import os
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 import numpy as np
 import torch
@@ -68,6 +69,10 @@ if __name__ == "__main__":
         project="Lunar-magnetism",
         config=config_dict,
     )
+
+    output_dir = "./outputs/babypinn_real_data/"
+
+    os.makedirs(output_dir)
 
     Lunar_data_loader1 = Lunar_data_loader(filename=data_filename)
     Lunar_surface_data_loader1 = Lunar_surface_data_loader(filename=surface_data_filename)

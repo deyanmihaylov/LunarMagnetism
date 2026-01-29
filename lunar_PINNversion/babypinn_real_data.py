@@ -10,7 +10,7 @@ from dataloader.dataLoader import (
     Lunar_surface_data_loader,
 )
 from dataloader.util import spherical_to_cartesian
-# import wandb
+import wandb
 
 if torch.cuda.is_available():
     device = torch.device("cuda")  # Select GPU
@@ -35,8 +35,8 @@ Lunar_surface_data_loader1 = Lunar_surface_data_loader(filename=surface_data_fil
 domain = np.random.rand(100000, 3) # Random points inside the domain [0, 1]^3
 
 domain[:, 0] = domain[:, 0] * 1e5 + R_lunar # r in kkm
-domain[:, 1] = domain[:, 1] * np.pi  - np.pi/2# theta
-domain[:, 2] = domain[:, 2] * 2 * np.pi  - np.pi# theta
+domain[:, 1] = domain[:, 1] * np.pi - np.pi/2 # theta
+domain[:, 2] = domain[:, 2] * 2 * np.pi - np.pi # theta
 
 domain_xyz = np.array([
     spherical_to_cartesian(el[0] / (R_lunar), el[1], el[2]) for el in domain
@@ -90,8 +90,9 @@ def generate_collocation_points(n_points=60000):
     domain[:, 1] = domain[:, 1] * np.pi - np.pi / 2
     domain[:, 2] = domain[:, 2] * 2 * np.pi - np.pi
 
-    domain_xyz = np.array([spherical_to_cartesian(el[0] / R_lunar, el[1], el[2])
-                           for el in domain])
+    domain_xyz = np.array([
+        spherical_to_cartesian(el[0] / R_lunar, el[1], el[2]) for el in domain
+    ])
     return torch.tensor(domain_xyz, dtype=torch.float32).to(device)
 
 n_colloc = 60000
@@ -124,5 +125,5 @@ pinn.train_pinn(
     batch_size=65536,
     checkpoint_every=1000,  # Save checkpoint every N epochs
     resume_from=None,  # Path to checkpoint to resume from
-    output_dir="./babypinn_real_data_output",
+    output_dir="./outputs/babypinn_real_data",
 )

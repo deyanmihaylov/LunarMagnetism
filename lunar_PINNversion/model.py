@@ -14,6 +14,7 @@ from evaluation.mollweide_plot import (
     plot_four_component_mollweide,
 )
 from dataloader.util import spherical_to_cartesian
+import wandb
 
 R_lunar = 1737e3 # m
 

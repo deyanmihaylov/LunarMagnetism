@@ -52,6 +52,14 @@ if __name__ == "__main__":
     data_filename = "./data/Moon_Mag_100km.txt"
     surface_data_filename = "./data/surface_measurements.txt"
 
+    config_dict = {
+        "R_lunar": R_lunar,
+        "height_obs": height_obs,
+        "batch_size": batch_size,
+        "data_filename": data_filename,
+        "surface_data_filename": surface_data_filename,
+    }
+
     wandb.init(
         project="Lunar-magnetism",
         config=config_dict,

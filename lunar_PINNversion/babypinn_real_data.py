@@ -20,22 +20,16 @@ else:
     device = torch.device("cpu")  # Fallback to CPU
     print("Using CPU")
 
-# ============================================
-# SAMPLE BOUNDARY DATA
-# ============================================
 def sample_boundary_data(
     boundary_points_full,
     B_measured_full,
-    n_samples=60000,
+    n_samples: int = 60000,
 ):
     """Randomly sample boundary observations"""
     total_points = len(boundary_points_full)
     indices = torch.randperm(total_points)[:n_samples]  # Random sampling on GPU
     return boundary_points_full[indices], B_measured_full[indices]
 
-# ============================================
-# COLLOCATION POINTS
-# ============================================
 def generate_collocation_points(n_points=60000):
     """Generate random collocation points"""
     domain = np.random.rand(n_points, 3)
@@ -50,7 +44,7 @@ def generate_collocation_points(n_points=60000):
 
 
 if __name__ == "__main__":
-    R_lunar = 1701e3 # lunar radius
+    R_lunar = 1737e3 # lunar radius
     height_obs = 1e5 # height of observation
     batch_size = 8096
 

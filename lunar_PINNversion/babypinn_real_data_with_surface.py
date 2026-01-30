@@ -1,14 +1,34 @@
 import torch
+import os
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 import matplotlib.pyplot as pl
 from model import PINN
-from dataloader.dataLoader import Lunar_data_loader, Lunar_surface_data_loader
+from dataloader.dataLoader import (
+    Lunar_data_loader,
+    Lunar_surface_data_loader,
+)
 from dataloader.util import spherical_to_cartesian
 import wandb
 
+if torch.cuda.is_available():
+    device = torch.device("cuda")  # Select GPU
+    print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+else:
+    device = torch.device("cpu")  # Fallback to CPU
+    print("Using CPU")
+
+def sample_boundary_data(
+    boundary_points_full,
+    B_measured_full,
+    n_samples: int = 60000,
+):
+    """Randomly sample boundary observations"""
+    total_points = len(boundary_points_full)
+    indices = torch.randperm(total_points)[:n_samples]  # Random sampling on GPU
+    return boundary_points_full[indices], B_measured_full[indices]
 
 def generate_collocation_points(n_points=60000):
     """Generate random collocation points"""
@@ -22,30 +42,24 @@ def generate_collocation_points(n_points=60000):
     ])
     return torch.tensor(domain_xyz, dtype=torch.float32).to(device)
 
-def sample_boundary_data(
-    boundary_points_full,
-    B_measured_full,
-    n_samples: int = 60000,
-):
-    """Randomly sample boundary observations"""
-    total_points = len(boundary_points_full)
-    indices = torch.randperm(total_points)[:n_samples]  # Random sampling on GPU
-    return boundary_points_full[indices], B_measured_full[indices]
-
-if torch.cuda.is_available():
-    device = torch.device("cuda")  # Select GPU
-    print(f"Using GPU: {torch.cuda.get_device_name(0)}")
-else:
-    device = torch.device("cpu")  # Fallback to CPU
-    print("Using CPU")
 
 if __name__ == "__main__":
     R_lunar = 1737e3 # lunar radius
     height_obs = 1e5 # height of observation
     batch_size = 100000
     num_sample_points = int(1e5)
-    data_filename = './data/Moon_Mag_100km.txt'
-    surface_data_filename = './data/surface_measurements.txt'
+
+    data_filename = "./data/Moon_Mag_100km.txt"
+    surface_data_filename = "./data/surface_measurements.txt"
+
+    wandb.init(
+        project="Lunar-magnetism",
+        config=config_dict,
+    )
+
+    output_dir = "./outputs/babypinn_real_data_with_surface/"
+
+    os.makedirs(output_dir)
 
     Lunar_data_loader1 = Lunar_data_loader(filename=data_filename)
     Lunar_surface_data_loader1 = Lunar_surface_data_loader(filename=surface_data_filename)
@@ -68,19 +82,23 @@ if __name__ == "__main__":
         Lunar_data_loader1.y_coord,
         Lunar_data_loader1.z_coord,
     ), axis=-1) / (R_lunar)
+
     boundary_points_full = torch.tensor(
         boundary_points_full,
         dtype=torch.float32,
     ).to(device)
+
     B_measured_full = np.stack((
         Lunar_data_loader1.b_x,
         Lunar_data_loader1.b_y,
         Lunar_data_loader1.b_z,
     ), axis=-1)
+
     B_measured_full = torch.tensor(
         B_measured_full,
         dtype=torch.float32,
     ).to(device)
+
     print(f"Boundary points shape: {boundary_points_full.shape}")
     print(f"B measured shape: {B_measured_full.shape}")
 
@@ -90,10 +108,12 @@ if __name__ == "__main__":
         Lunar_surface_data_loader1.y_coord,
         Lunar_surface_data_loader1.z_coord,
     ), axis=-1) / (R_lunar)
+
     boundary_points_surface = torch.tensor(
         boundary_points_surface,
         dtype=torch.float32,
     ).to(device)
+    
     B_measured_surface = torch.tensor(
         Lunar_surface_data_loader1.data[2, :],
         dtype=torch.float32,
@@ -168,6 +188,5 @@ if __name__ == "__main__":
         batch_size=batch_size,
         checkpoint_every=1000,  # Save checkpoint every N epochs
         resume_from=None,  # Path to checkpoint to resume from
-        output_dir="./real_data_with_surface_data_v2_lr-3",
+        output_dir="./outputs/real_data_with_surface_data_v2_lr-3",
     )
-    

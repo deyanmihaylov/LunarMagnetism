@@ -57,7 +57,7 @@ if __name__ == "__main__":
         config=config_dict,
     )
 
-    output_dir = "./outputs/babypinn_real_data_with_surface/"
+    output_dir = "./outputs/real_data_with_surface_data_v2_lr-3"
 
     os.makedirs(output_dir)
 
@@ -68,8 +68,8 @@ if __name__ == "__main__":
     domain = np.random.rand(100000, 3) # Random points inside the domain [0, 1]^3
 
     domain[:, 0] = domain[:, 0] * 1e5 + R_lunar # r in kkm
-    domain[:, 1] = domain[:, 1] * np.pi  - np.pi/2# theta
-    domain[:, 2] = domain[:, 2] * 2 * np.pi  - np.pi# theta
+    domain[:, 1] = domain[:, 1] * np.pi - np.pi/2# theta
+    domain[:, 2] = domain[:, 2] * 2 * np.pi - np.pi# theta
 
     domain_xyz = np.array([
         spherical_to_cartesian(el[0] / (R_lunar), el[1], el[2]) for el in domain
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         boundary_points_surface,
         dtype=torch.float32,
     ).to(device)
-    
+
     B_measured_surface = torch.tensor(
         Lunar_surface_data_loader1.data[2, :],
         dtype=torch.float32,
@@ -188,5 +188,16 @@ if __name__ == "__main__":
         batch_size=batch_size,
         checkpoint_every=1000,  # Save checkpoint every N epochs
         resume_from=None,  # Path to checkpoint to resume from
-        output_dir="./outputs/real_data_with_surface_data_v2_lr-3",
+        output_dir=output_dir,
     )
+
+    artifact = wandb.Artifact(
+        name="output_dir",
+        type="misc_files",
+    )
+
+    artifact.add_dir(output_dir)
+
+    wandb.log_artifact(artifact)
+
+    wandb.finish()

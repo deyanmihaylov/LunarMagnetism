@@ -100,7 +100,7 @@ if __name__ == "__main__":
         Lunar_data_loader1.b_y,
         Lunar_data_loader1.b_z,
     ), axis=-1)
-    
+
     B_measured_full = torch.tensor(
         B_measured_full,
         dtype=torch.float32,
@@ -143,7 +143,7 @@ if __name__ == "__main__":
         batch_size=65536,
         checkpoint_every=1000, # Save checkpoint every N epochs
         resume_from=None, # Path to checkpoint to resume from
-        output_dir="./outputs/babypinn_real_data",
+        output_dir=output_dir,
     )
 
     artifact = wandb.Artifact(

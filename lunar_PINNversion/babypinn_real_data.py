@@ -83,6 +83,7 @@ if __name__ == "__main__":
     ])
     domain_xyz = torch.tensor(domain_xyz, dtype=torch.float32).to(device)
 
+    # BC from orbit
     boundary_points_full = np.stack((
         Lunar_data_loader1.x_coord,
         Lunar_data_loader1.y_coord,
@@ -99,6 +100,7 @@ if __name__ == "__main__":
         Lunar_data_loader1.b_y,
         Lunar_data_loader1.b_z,
     ), axis=-1)
+    
     B_measured_full = torch.tensor(
         B_measured_full,
         dtype=torch.float32,

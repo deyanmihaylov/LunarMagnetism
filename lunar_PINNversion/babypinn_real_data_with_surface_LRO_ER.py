@@ -53,6 +53,20 @@ if __name__ == "__main__":
     surface_data_filename = "./data/LRO_data/LRO_combined_520V.csv"
     output_dir = "./outputs/LRO_ER_surface_data_v1/"
 
+    config_dict = {
+        "R_lunar": R_lunar,
+        "height_obs": height_obs,
+        "batch_size": batch_size,
+        "num_sample_points": num_sample_points,
+        "data_filename": data_filename,
+        "surface_data_filename": surface_data_filename,
+    }
+
+    wandb.init(
+        project="Lunar-magnetism",
+        config=config_dict,
+    )
+
     os.makedirs(output_dir, exist_ok=True)
 
     Lunar_data_loader1 = Lunar_data_loader(filename=data_filename)
@@ -190,3 +204,15 @@ if __name__ == "__main__":
         # resume_from="./outputs/LRO_ER_surface_data_v1/checkpoint_latest.pt", # Path to checkpoint to resume from
         output_dir=output_dir,
     )
+
+    artifact = wandb.Artifact(
+        name="output_dir",
+        type="misc_files",
+    )
+
+    artifact.add_dir(output_dir)
+
+    wandb.log_artifact(artifact)
+
+    wandb.finish()
+    

@@ -189,14 +189,19 @@ def plot_mollweide_map(lon, lat, B_field, ax=None,
     # ✅ Return axis and image for further customization
     return ax, im1
 
-
-def plot_three_component_mollweide(lon, lat, B_x, B_y, B_z,
-                                   output_file='three_component_map.png',
-                                   cnorm='symlog',
-                                   figsize=(16, 24),
-                                   titles=None,
-                                   cbar_label="B field [micro Tesla]",
-                                   share_colorbar=False):
+def plot_three_component_mollweide(
+    lon,
+    lat,
+    B_x,
+    B_y,
+    B_z,
+    output_file='three_component_map.png',
+    cnorm='symlog',
+    figsize=(16, 24),
+    titles=None,
+    cbar_label="B field [micro Tesla]",
+    share_colorbar=False,
+) -> None:
     """
     Plot three magnetic field components on Mollweide projection in 3x1 grid.
 
@@ -275,7 +280,7 @@ def plot_three_component_mollweide(lon, lat, B_x, B_y, B_z,
                     linscale=0.03,
                     vmin=vmin,
                     vmax=vmax,
-                    base=10
+                    base=10,
                 )
             )
         else:
@@ -310,16 +315,24 @@ def plot_three_component_mollweide(lon, lat, B_x, B_y, B_z,
                             fraction=0.046, aspect=40)
 
     plt.savefig(output_file, dpi=150, bbox_inches='tight')
+    plt.close()
 
-    return fig, axes, ims
+    # return fig, axes, ims
 
-def plot_four_component_mollweide(lon, lat, B_x, B_y, B_z, B_w,
-                                  output_file='four_component_map.png',
-                                  cnorm='symlog',
-                                  figsize=(16, 32), vlims = [1e-2, 5],
-                                  titles=None,
-                                  cbar_label="B field [nTesla]",
-                                  share_colorbar=False):
+def plot_four_component_mollweide(
+    lon,
+    lat,
+    B_x,
+    B_y,
+    B_z,
+    B_w,
+    output_file='four_component_map.png',
+    cnorm='symlog',
+    figsize=(16, 32), vlims = [1e-2, 5],
+    titles=None,
+    cbar_label="B field [nTesla]",
+    share_colorbar=False,
+) -> None:
     """
     Plot four magnetic field components on Mollweide projection in 4x1 grid.
 
@@ -399,7 +412,8 @@ def plot_four_component_mollweide(lon, lat, B_x, B_y, B_z, B_w,
 
                 norm=colors.LogNorm(
                     vmin=vlims[0],
-                    vmax=vlims[1])
+                    vmax=vlims[1],
+                )
             )
         elif cnorm == 'symlog':
             im = ax.scatter(
@@ -414,10 +428,9 @@ def plot_four_component_mollweide(lon, lat, B_x, B_y, B_z, B_w,
                     linscale=vlims[0],
                     vmin=-vlims[1],
                     vmax=vlims[1],
-                    base=10
+                    base=10,
                 )
             )
-
 
         ax.grid(True)
         ax.set_xlabel("Longitude")
@@ -429,27 +442,45 @@ def plot_four_component_mollweide(lon, lat, B_x, B_y, B_z, B_w,
 
         # Add individual colorbar if not sharing
         if not share_colorbar:
-            cbar = plt.colorbar(im, ax=ax, orientation="horizontal",
-                                pad=0.15, label=cbar_label)
+            cbar = plt.colorbar(
+                im,
+                ax=ax,
+                orientation="horizontal",
+                pad=0.15,
+                label=cbar_label,
+            )
 
     # Add shared colorbar if requested
     if share_colorbar:
         # Add colorbar spanning all four subplots
-        cbar = fig.colorbar(ims[0], ax=axes, orientation="horizontal",
-                            pad=0.05, label=cbar_label,
-                            fraction=0.046, aspect=40)
+        cbar = fig.colorbar(
+            ims[0],
+            ax=axes,
+            orientation="horizontal",
+            pad=0.05,
+            label=cbar_label,
+            fraction=0.046,
+            aspect=40,
+        )
     plt.savefig(output_file, dpi=150, bbox_inches='tight')
     plt.close()
 
-    return fig, axes, ims
+    # return fig, axes, ims
 
-def plot_ER_data_mollweide(lon, lat, B_sc, B_alpha, B_z, B_w,
-                            output_file='four_component_map.png',
-                            cnorm='symlog',
-                                  figsize=(16, 32), vlims = [1e-2, 5],
-                                  titles=None,
-                                  cbar_label="B field [nTesla]",
-                                  share_colorbar=False):
+def plot_ER_data_mollweide(
+    lon,
+    lat,
+    B_sc,
+    B_alpha,
+    B_z,
+    B_w,
+    output_file='four_component_map.png',
+    cnorm='symlog',
+    figsize=(16, 32), vlims = [1e-2, 5],
+    titles=None,
+    cbar_label="B field [nTesla]",
+    share_colorbar=False,
+):
     """
     Plot four magnetic field components on Mollweide projection in 4x1 grid.
 

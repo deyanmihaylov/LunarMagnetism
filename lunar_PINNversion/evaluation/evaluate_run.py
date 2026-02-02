@@ -4,10 +4,11 @@ import numpy as np
 import torch, os
 from torch.utils.data import DataLoader, TensorDataset
 import matplotlib.pyplot as pl
-from lunar_PINNversion.model import PINN
-from lunar_PINNversion.dataloader.dataLoader import Lunar_data_loader, Lunar_surface_data_loader
-from lunar_PINNversion.dataloader.util import spherical_to_cartesian
-from lunar_PINNversion.evaluation.mollweide_plot import plot_four_component_mollweide
+from model import PINN
+from dataloader.dataLoader import Lunar_data_loader, Lunar_surface_data_loader
+from dataloader.util import spherical_to_cartesian
+from evaluation.mollweide_plot import plot_four_component_mollweide
+
 def evaluate_on_latlon_grid(
     model,
     num_pts=360,
@@ -95,7 +96,7 @@ def save_Bfield_csv_numpy(
         data,
         delimiter=",",
         header=header,
-        comments=""
+        comments="",
     )
 
 def plot_B_eval_from_arrays(
@@ -158,50 +159,54 @@ def plot_B_eval_from_arrays(
         share_colorbar=False, vlims=[1e-1, 1e2]
     )
 
+if __name__ == "__main__":
+    output_dir = "./outputs/LRO_ER_surface_data_v1/"
+    checkpoint_path = os.path.join(output_dir, 'checkpoint_latest.pt')
 
-output_dir = "/home/memolnar/Projects/lunarmagnetism/Outputs/real_data/LRO_ER_surface_data_v1/"
-checkpoint_path = os.path.join(output_dir, 'checkpoint_latest.pt')
+    device: object = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model, checkpoint = PINN.load_checkpoint(
+        checkpoint_path,
+        device=device
+    )
 
-device: object = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model, checkpoint = PINN.load_checkpoint(
-    checkpoint_path,
-    device=device
-)
+    lon_surface, lat_surface, Bx_surface, By_surface, Bz_surface, Bmag_surface = evaluate_on_latlon_grid(
+        model,
+        num_pts=360,
+        height_obs=0,
+        device=device,
+    )
 
-lon_surface, lat_surface, Bx_surface, By_surface, Bz_surface, Bmag_surface = evaluate_on_latlon_grid(
-    model,
-    num_pts=360,
-    height_obs=0,
-    device=device
-)
+    lon_orbit, lat_orbit, Bx_orbit, By_orbit, Bz_orbit, Bmag_orbit = evaluate_on_latlon_grid(
+        model,
+        num_pts=360,
+        height_obs=1e5,
+        device=device,
+    )
 
-lon_orbit, lat_orbit, Bx_orbit, By_orbit, Bz_orbit, Bmag_orbit = evaluate_on_latlon_grid(
-    model,
-    num_pts=360,
-    height_obs=1e5,
-    device=device
-)
+    plot_B_eval_from_arrays(
+        lon_surface, lat_surface,
+        Bx_surface, By_surface, Bz_surface, Bmag_surface,
+        output_dir=output_dir,
+        tag="eval_surface",
+        epoch=checkpoint["epoch"],
+    )
 
-plot_B_eval_from_arrays(
-    lon_surface, lat_surface, Bx_surface, By_surface, Bz_surface, Bmag_surface,
-    output_dir=output_dir,
-    tag="eval_surface",
-    epoch=checkpoint["epoch"]
-)
+    plot_B_eval_from_arrays(
+        lon_orbit, lat_orbit,
+        Bx_orbit, By_orbit, Bz_orbit, Bmag_orbit,
+        output_dir=output_dir,
+        tag="eval_orbit",
+        epoch=checkpoint["epoch"],
+    )
 
-plot_B_eval_from_arrays(
-    lon_orbit, lat_orbit, Bx_orbit, By_orbit, Bz_orbit, Bmag_orbit,
-    output_dir=output_dir,
-    tag="eval_orbit",
-    epoch=checkpoint["epoch"]
-)
+    save_Bfield_csv_numpy(
+        lon_orbit, lat_orbit,
+        Bx_orbit, By_orbit, Bz_orbit, Bmag_orbit,
+        os.path.join(output_dir, "Lunar_Bfield_orbit.csv"),
+    )
 
-save_Bfield_csv_numpy(
-    lon_orbit, lat_orbit, Bx_orbit, By_orbit, Bz_orbit, Bmag_orbit,
-    os.path.join(output_dir, "Lunar_Bfield_orbit.csv"),
-)
-
-save_Bfield_csv_numpy(
-    lon_surface, lat_surface, Bx_surface, By_surface, Bz_surface, Bmag_surface,
-    os.path.join(output_dir, "Lunar_Bfield_surface.csv"),
-)
+    save_Bfield_csv_numpy(
+        lon_surface, lat_surface,
+        Bx_surface, By_surface, Bz_surface, Bmag_surface,
+        os.path.join(output_dir, "Lunar_Bfield_surface.csv"),
+    )

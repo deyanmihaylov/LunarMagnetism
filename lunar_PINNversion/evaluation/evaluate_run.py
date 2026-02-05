@@ -1,13 +1,16 @@
 import torch
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 import numpy as np
 import torch, os
 from torch.utils.data import DataLoader, TensorDataset
 import matplotlib.pyplot as pl
+
 from model import PINN
 from dataloader.dataLoader import Lunar_data_loader, Lunar_surface_data_loader
 from dataloader.util import spherical_to_cartesian
 from evaluation.mollweide_plot import plot_four_component_mollweide
+from utils import select_device
+
 
 def evaluate_on_latlon_grid(
     model,
@@ -160,6 +163,8 @@ def plot_B_eval_from_arrays(
     )
 
 if __name__ == "__main__":
+    device = select_device(verbose=True)
+    
     output_dir = "./outputs/LRO_ER_surface_data_v1/"
     checkpoint_path = os.path.join(output_dir, 'checkpoint_latest.pt')
 

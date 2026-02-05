@@ -1,17 +1,11 @@
 import torch
-import copy
+# import copy
 import torch.nn as nn
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from torch.optim.lr_scheduler import ExponentialLR
 
-if torch.cuda.is_available():
-    device = torch.device("cuda") # Select GPU
-    print(f"Using GPU: {torch.cuda.get_device_name(0)}")
-else:
-    device = torch.device("cpu") # Fallback to CPU
-    print("Using CPU")
 
 class PositionalEncoding(nn.Module):
     def __init__(

@@ -5,8 +5,9 @@ from scipy.optimize import root
 import cmcrameri.cm as cmc
 from matplotlib.gridspec import GridSpec
 
+
 def geographic_to_Mollweide_point(
-        points_geographic: np.ndarray
+        points_geographic: np.ndarray,
 ) -> np.ndarray:
     """
     Transform points on the unit sphere from geographic coordinates (ra,dec)

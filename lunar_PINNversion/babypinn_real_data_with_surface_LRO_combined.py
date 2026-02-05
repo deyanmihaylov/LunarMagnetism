@@ -1,13 +1,11 @@
 import torch
 from torch.utils.data import DataLoader, TensorDataset
-
 import os
 import numpy as np
 import matplotlib.pyplot as pl
-
 import wandb
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 from model import PINN
 from dataloader.dataLoader import Lunar_data_loader, Lunar_surface_ER_data_loader
@@ -17,34 +15,45 @@ from evaluation.mollweide_plot import (
     plot_three_component_mollweide,
     plot_four_component_mollweide,
 )
+from utils import select_device
 
 
-def generate_collocation_points(n_points=60000):
+def generate_collocation_points(
+    n_points: int = 60000,
+) -> torch.Tensor:
     """Generate random collocation points"""
     domain = np.random.rand(n_points, 3)
     domain[:, 0] = domain[:, 0] * 1e5 + 1
     domain[:, 1] = domain[:, 1] * np.pi - np.pi / 2
     domain[:, 2] = domain[:, 2] * 2 * np.pi - np.pi
 
-    domain_xyz = np.array([spherical_to_cartesian(el[0] / R_lunar, el[1], el[2])
-                           for el in domain])
+    domain_xyz = np.array([
+        spherical_to_cartesian(el[0] / R_lunar, el[1], el[2])
+        for el in domain
+    ])
     return torch.tensor(domain_xyz, dtype=torch.float32).to(device)
 
-def sample_boundary_data(boundary_points_full, B_measured_full, n_samples=60000):
+def sample_boundary_data(
+    boundary_points_full,
+    B_measured_full,
+    n_samples: int = 60000,
+):
     """Randomly sample boundary observations"""
     total_points = len(boundary_points_full)
     indices = torch.randperm(total_points)[:n_samples]  # Random sampling on GPU
     return boundary_points_full[indices], B_measured_full[indices]
 
-if torch.cuda.is_available():
-    device = torch.device("cuda")  # Select GPU
-    print(f"Using GPU: {torch.cuda.get_device_name(0)}")
-else:
-    device = torch.device("cpu")  # Fallback to CPU
-    print("Using CPU")
+# if torch.cuda.is_available():
+#     device = torch.device("cuda")  # Select GPU
+#     print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+# else:
+#     device = torch.device("cpu")  # Fallback to CPU
+#     print("Using CPU")
 
 
 if __name__ == "__main__":
+    device = select_device(verbose=True)
+    
     R_lunar = 1737e3 # lunar radius
     height_obs = 1e5 # height of observation
     batch_size = 100000

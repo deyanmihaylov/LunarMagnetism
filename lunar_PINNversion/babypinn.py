@@ -3,17 +3,15 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import os
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
-import numpy as np
-import torch
 from torch.utils.data import DataLoader, TensorDataset
 import matplotlib.pyplot as pl
 import wandb
+
+from utils import select_device
 
 
 class PositionalEncoding(nn.Module):
@@ -344,6 +342,8 @@ def evaluate_model(
 
 
 if __name__ == "__main__":
+    device = select_device(verbose=True)
+    
     output_dir = "./outputs/babyPINN/"
 
     os.makedirs(output_dir)

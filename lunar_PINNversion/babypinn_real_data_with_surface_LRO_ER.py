@@ -1,13 +1,11 @@
 import torch
 from torch.utils.data import DataLoader, TensorDataset
-
 import os
 import numpy as np
 import matplotlib.pyplot as pl
-
 import wandb
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 from model import PINN
 from dataloader.dataLoader import Lunar_data_loader, Lunar_surface_ER_data_loader
@@ -17,6 +15,7 @@ from evaluation.mollweide_plot import (
     plot_three_component_mollweide,
     plot_four_component_mollweide,
 )
+from utils import select_device
 
 
 def generate_collocation_points(n_points=60000):
@@ -45,6 +44,8 @@ else:
 
 
 if __name__ == "__main__":
+    device = select_device(verbose=True)
+    
     R_lunar = 1737e3 # lunar radius
     height_obs = 1e5 # height of observation
     batch_size = 100000
@@ -215,4 +216,3 @@ if __name__ == "__main__":
     wandb.log_artifact(artifact)
 
     wandb.finish()
-    

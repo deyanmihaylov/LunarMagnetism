@@ -1,0 +1,1 @@
+wget -r -np -nH --cut-dirs=2 -R "index.html*" https://data.darts.isas.jaxa.jp/pub/pds3/sln-l-lmag-3-mag-ts-v1.0/
